@@ -218,7 +218,13 @@ if($search['hiddenpagoproveedores']!=""){
 $sWhere2.="  $tables.hiddenpagoproveedores LIKE '%".$search['hiddenpagoproveedores']."%' OR ";}
 if($search['ADJUNTAR_COTIZACION']!=""){
 $sWhere2.="  $tables.ADJUNTAR_COTIZACION LIKE '%".$search['ADJUNTAR_COTIZACION']."%' OR ";}
+if($search['EJECUTIVOTARJETA']!=""){
+$ejecutivoTarjeta = strtoupper($search['EJECUTIVOTARJETA']);
+$ejecutivoTarjetaEscapado = $this->mysqli->real_escape_string($ejecutivoTarjeta);
 
+$busquedaNombre = "SELECT idRelacion FROM 01informacionpersonal WHERE UPPER(CONCAT_WS(' ', NOMBRE_1, NOMBRE_2, APELLIDO_PATERNO, APELLIDO_MATERNO)) LIKE '%".$ejecutivoTarjetaEscapado."%'";
+
+$sWhere2.="  (UPPER($tables.EJECUTIVOTARJETA) LIKE '%".$ejecutivoTarjetaEscapado."%' OR $tables.EJECUTIVOTARJETA IN (".$busquedaNombre.")) OR ";}
 if($search['TIPO_CAMBIOP']!=""){
 $sWhere2.="  $tables.TIPO_CAMBIOP LIKE '%".$search['TIPO_CAMBIOP']."%' OR ";}
 if($search['TOTAL_ENPESOS']!=""){
@@ -342,8 +348,10 @@ $sWhere2.="  $tables2.propina = '".$propina."' OR ";}
 
 
 if ($sWhere2 != "") {
+
     $sWhere22 = substr($sWhere2, 0, -4);
-    $sWhere3 = ' ' . $sWhereCC . ' 
+
+   $sWhere3 = ' ' . $sWhereCC . ' 
         INNER JOIN 04altaeventos 
             ON 04altaeventos.NUMERO_EVENTO = 07COMPROBACION.NUMERO_EVENTO
         INNER JOIN 04personal 
@@ -356,6 +364,26 @@ if ($sWhere2 != "") {
                     
                     -- 2) O es EJECUTIVO TARJETA
                     OR 07COMPROBACION.EJECUTIVOTARJETA = "' . $_SESSION['idem'] . '"
+
+                    -- 3) O coincide por nombre en EJECUTIVOTARJETA, AYUDO o EJECUTIVO
+                    OR 07COMPROBACION.EJECUTIVOTARJETA = (
+                        SELECT TRIM(CONCAT(p.NOMBRE_1, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO))
+                        FROM 01informacionpersonal p
+                        WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
+                        LIMIT 1
+                    )
+                    OR 07COMPROBACION.NOMBRE_DEL_AYUDO = (
+                        SELECT TRIM(CONCAT(p.NOMBRE_1, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO))
+                        FROM 01informacionpersonal p
+                        WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
+                        LIMIT 1
+                    )
+                    OR 07COMPROBACION.NOMBRE_DEL_EJECUTIVO = (
+                        SELECT TRIM(CONCAT(p.NOMBRE_1, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO))
+                        FROM 01informacionpersonal p
+                        WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
+                        LIMIT 1
+                    )
                 )
         )';
 } else {
@@ -372,6 +400,26 @@ if ($sWhere2 != "") {
 
                 -- 2) O es EJECUTIVO TARJETA
                 OR 07COMPROBACION.EJECUTIVOTARJETA = "' . $_SESSION['idem'] . '"
+
+                -- 3) O coincide por nombre en EJECUTIVOTARJETA, AYUDO o EJECUTIVO
+                OR 07COMPROBACION.EJECUTIVOTARJETA = (
+                    SELECT TRIM(CONCAT(p.NOMBRE_1, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO))
+                    FROM 01informacionpersonal p
+                    WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
+                    LIMIT 1
+                )
+                OR 07COMPROBACION.NOMBRE_DEL_AYUDO = (
+                    SELECT TRIM(CONCAT(p.NOMBRE_1, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO))
+                    FROM 01informacionpersonal p
+                    WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
+                    LIMIT 1
+                )
+                OR 07COMPROBACION.NOMBRE_DEL_EJECUTIVO = (
+                    SELECT TRIM(CONCAT(p.NOMBRE_1, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO))
+                    FROM 01informacionpersonal p
+                    WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
+                    LIMIT 1
+                )
             )
     ';
 }
@@ -384,10 +432,10 @@ $sWhere3 .= " ORDER BY " . $sWhere3campo;
 //echo $sql="SELECT $campos FROM  $tables $sWhere $sWhere3 LIMIT $offset,$per_page";
 
 
-		 $sql="SELECT $campos , 07COMPROBACION.id as 07COMPROBACIONid FROM $tables LEFT JOIN $tables2 $sWhere $sWhere3 LIMIT $offset,$per_page";
+	 $sql="SELECT $campos, 07COMPROBACION.id as 07COMPROBACIONid, 07COMPROBACION.NUMERO_EVENTO as NUMERO_EVENTO, 07COMPROBACION.NOMBRE_COMERCIAL as NOMBRE_COMERCIAL FROM $tables LEFT JOIN $tables2 $sWhere $sWhere3 LIMIT $offset,$per_page";
 		
 		$query=$this->mysqli->query($sql);
-		$sql1="SELECT $campos , 07COMPROBACION.id as 07COMPROBACIONid FROM  $tables LEFT JOIN $tables2 $sWhere $sWhere3 ";
+		$sql1="SELECT $campos, 07COMPROBACION.id as 07COMPROBACIONid, 07COMPROBACION.NUMERO_EVENTO as NUMERO_EVENTO, 07COMPROBACION.NOMBRE_COMERCIAL as NOMBRE_COMERCIAL FROM  $tables LEFT JOIN $tables2 $sWhere $sWhere3 ";
 		$nums_row=$this->countAll($sql1);
 		//Set counter
 		$this->setCounter($nums_row);
