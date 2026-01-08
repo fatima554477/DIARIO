@@ -304,6 +304,12 @@ if($database->plantilla_filtro($nombreTabla,"descuentos",$altaeventos,$DEPARTAME
 <?php 
 if($database->plantilla_filtro($nombreTabla,"MONTO_DEPOSITAR",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">TOTAL</th>
 <?php } ?>
+
+<?php 
+if($database->plantilla_filtro($nombreTabla,"MATCH",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">MATCH CON <br>ESTADO DE CUENTA</th>
+<th style="background:#c9e8e8;text-align:center">STATUS DE<br>
+COMPROBACIÓN</th>
+<?php } ?>
 <?php 
 if($database->plantilla_filtro($nombreTabla,"TIPO_DE_MONEDA",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">TIPO DE MONEDA O DIVISA</th>
 <?php } ?>
@@ -610,6 +616,14 @@ echo $descuentos; ?>"></td>
 if($database->plantilla_filtro($nombreTabla,"MONTO_DEPOSITAR",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8"><input type="text" class="form-control" id="MONTO_DEPOSITAR_1" value="<?php 
 echo $MONTO_DEPOSITAR; ?>"></td>
 <?php } ?>
+
+<?php  
+if($database->plantilla_filtro($nombreTabla,"MATCH",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8"><input type="text" class="form-control" id="MATCH_1" value="<?php 
+echo $MATCH; ?>"></td>
+<td style="background:#c9e8e8"></td>
+<?php } ?>
+
+
 <?php  
 if($database->plantilla_filtro($nombreTabla,"TIPO_DE_MONEDA",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8"><input type="text" class="form-control" id="TIPO_DE_MONEDA_1" value="<?php 
 echo $TIPO_DE_MONEDA; ?>"></td>
@@ -1277,6 +1291,47 @@ echo  number_format($row['MONTO_DEPOSITAR'],2,'.',',');
 		$colspan2 += 1;
 ?></td>
 <?php } ?>
+
+
+
+
+<?php  if($database->plantilla_filtro($nombreTabla,"MATCH",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"  class="dropdown">
+<input style="text-align:center" class="btn btn-success dropdown-toggle" value="MATCH" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <ul class="dropdown-menu">
+			<li style="background-color:#edccf3; cursor:pointer;" name="view" value="COMPROBAR"  id="<?php echo $row["07COMPROBACIONid"]; ?>" class="dropdown-item view_MATCH2filtroinbursa">
+			<a><?php echo $row["07COMPROBACIONid"]; ?> COMPROBAR ESTADO DE CUENTA INBURSA</a>
+			</li>
+
+			<li style="background-color:#ccd9f3; cursor:pointer;" name="view" value="COMPROBAR"  id="<?php echo $row["07COMPROBACIONid"]; ?>" class="dropdown-item view_MATCH2filtrobbva">
+			<a><?php echo $row["07COMPROBACIONid"]; ?> COMPROBAR ESTADO DE CUENTA BBVA</a>
+			</li>
+
+			<li style="background-color:#edccf3; cursor:pointer;" name="view" value="COMPROBAR"  id="<?php echo $row["07COMPROBACIONid"]; ?>" class="dropdown-item view_MATCH2filtroAMEX">
+			<a><?php echo $row["07COMPROBACIONid"]; ?> COMPROBAR ESTADO DE CUENTA AMERICAN EXPRESS</a>
+			</li>			
+
+			<li style="background-color:#edccf3; cursor:pointer;" name="view" value="COMPROBAR"  id="<?php echo $row["07COMPROBACIONid"]; ?>" class="dropdown-item view_MATCH2filtroSIVALE">
+			<a><?php echo $row["07COMPROBACIONid"]; ?> COMPROBAR ESTADO DE CUENTA SÍ VALE</a>
+			</li>			
+
+			<li style="background-color:#ccd9f3"><a class="dropdown-item" href="MATCHESTADO.php" target="_blank">LINK A MATCH CON ESTADO DE CUENTA </a>
+			</li>  
+
+                         </td>
+
+
+<td><input type="checkbox" style="width:30%;color:red" class="form-check-input" <?php echo $database->validaexistematch2COMPROBACIONtodos($row["07COMPROBACIONid"],'TARJETABBVA'); ?> disabled />
+<?php echo $database->tarjetaComprobacion($row["07COMPROBACIONid"]); ?></td>
+<?php $colspan2 += 1; $colspan2 += 1; } ?>
+
+
+
+
+
+
+
+
+
 <?php  if($database->plantilla_filtro($nombreTabla,"TIPO_DE_MONEDA",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $row['TIPO_DE_MONEDA'];
 $colspan2 += 1;
 ?></td>
@@ -1696,7 +1751,20 @@ $totales2 = 'si';
 <input type="button" name="view" value="MODIFICAR" id="<?php echo $row["07COMPROBACIONid"]; ?>" class="btn btn-info btn-xs view_dataPAGOPROVEEmodifica22" /><?php } ?>  
 
 <?php if($database->variablespermisos('','COMGASTOSDIARIOSUBIR','ver')=='si'){ ?>
-<input type="button" name="view" value="SUBIR FACTURA" id="<?php echo $row["07COMPROBACIONid"]; ?>" class="btn btn-info btn-xs view_dataPAGOSUBIR" /><?php } ?>
+
+<?php 
+$UUID = isset($row["UUID"]) ? trim($row["UUID"]) : '';
+$textoBoton = ($UUID != '') ? 'MODIFICAR' : 'SUBIR FACTURA';
+?>
+
+<input type="button"
+       name="view"
+       value="<?php echo $textoBoton; ?>"
+       id="<?php echo $row["07COMPROBACIONid"]; ?>"
+       class="btn btn-info btn-xs view_dataPAGOSUBIR" />
+
+<?php } ?>
+
 </td>
 <td>
 
