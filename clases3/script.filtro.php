@@ -1,5 +1,37 @@
 
-<script>
+<style>
+/* loaderAUT con animación */
+.loaderAUT {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #6a0dad; /* Morado elegante */
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Texto estilizado */
+.msg-actualizando {
+  font-weight: bold;
+  font-size: 20px;
+  color: #6a0dad;
+  background: #f3e9fb;
+  border-radius: 6px;
+  padding: 6px 12px;
+  display: inline-flex;
+  align-items: center;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+}
+</style>
+<script type="text/javascript">
 
 
 
@@ -21,11 +53,10 @@
 		$('#pasarpagado2').html('cargando');
 	},
 		success:function(data){
-			load2(1);
-			
 		var result = data.split('^');			
-		$('#pasarpagado2').html("<span id='ACTUALIZADO' >"+result[0]+"</span>");
-		
+		$('#pasarpagado2').html("<span 'ACTUALIZADO'</span>").fadeIn().delay(500).fadeOut();
+		loadAUT(1);
+
 		
 		if(pasarpagado_text=='si'){
 		$('#color_pagado1a'+pasarpagado_id).css('background-color', '#ceffcc');
@@ -82,7 +113,7 @@ function STATUS_CHECKBOX(CHECKBOX_id, permisoModificar) {
         },
         beforeSend: function() {
             $('#ajax-notification')
-                .html('<div class="loader"></div> ⏳ ACTUALIZANDO...')
+                .html('<div class="loaderAUT"></div> ⏳ ACTUALIZANDO...')
                 .fadeIn();
         },
         success: function(data) {
@@ -151,11 +182,150 @@ function recalcularTotal() {
         }
     });
 
-    let totalFormateado = total.toLocaleString('es-MX', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
-    $('#totalCalculado').text('$' + totalFormateado);
+}
+
+
+
+
+function STATUS_AUDITORIA3(id){
+  var $cb = $("#STATUS_AUDITORIA3" + id);
+  var permGuardar   = ($cb.data("perm-guardar")   == 1);
+  var permModificar = ($cb.data("perm-modificar") == 1);
+  var valorPrevio   = String($cb.data("prev")); // 'si' | 'no'
+  var valorNuevo    = $cb.is(":checked") ? "si" : "no";
+
+  // 1) Sin guardar ni modificar: nunca debería disparar, pero por seguridad:
+  if(!permGuardar && !permModificar){
+    $cb.prop('checked', (valorPrevio === 'si'));
+    showNotify("Sin permiso para modificar", false);
+    return;
+  }
+
+  // 2) Si NO tiene modificar:
+  // - Puede pasar de 'no' -> 'si'
+  // - NO puede pasar de 'si' -> 'no' (revertir y salir)
+  if(!permModificar){
+    if(valorPrevio === 'si' && valorNuevo === 'no'){
+      // No permitido apagar
+      $cb.prop('checked', true);
+      showNotify("Solo puedes prender, no apagar", false);
+      return;
+    }
+  }
+
+  // Pintado optimista
+  $("#color_AUDITORIA3" + id).css('background-color', (valorNuevo === 'si') ? '#ceffcc' : '#e9d8ee');
+
+  $.ajax({
+    url: 'pagoproveedores/controladorPP.php',
+    type: 'POST',
+    data: { AUDITORIA3_id: id, AUDITORIA3_text: valorNuevo },
+    beforeSend: function(){
+      $('#pasarpagado2').html('cargando...');
+    },
+    success: function(resp){
+      // Éxito → fijar nuevo previo
+      $cb.data("prev", valorNuevo);
+
+      // 3) Regla clave: si SOLO tiene guardar y acaba de prender -> BLOQUEAR
+      if(!permModificar && permGuardar && valorNuevo === 'si'){
+        $cb.prop('disabled', true)
+           .css('cursor','not-allowed')
+           .attr('title','Autorizado (bloqueado)');
+      }
+
+      $('#pasarpagado2').html("<span>ACTUALIZADO</span>").fadeIn().delay(500).fadeOut();
+      showNotify("Autorización actualizada ✅", true);
+	  	loadAUT(1);
+    },
+
+    error: function(xhr){
+      // Rollback total
+      var volverSi = (valorPrevio === 'si');
+      $cb.prop('checked', volverSi);
+      $("#color_AUDITORIA3" + id).css('background-color', volverSi ? '#ceffcc' : '#e9d8ee');
+
+      showNotify("❌ Error de conexión (" + xhr.status + ")", false);
+    }
+  });
+}
+
+function showNotify(msg, ok){
+  $("#ajax-notification").stop(true,true)
+    .text(msg)
+    .css('background', ok ? '#4CAF50' : '#E53935')
+    .fadeIn(150).delay(1000).fadeOut(300);
+}
+
+
+function STATUS_SINXML(id){
+  var $cb = $("#STATUS_SINXML" + id);
+  var permGuardar2   = ($cb.data("perm-guardar2")   == 1);
+  var permModificar2 = ($cb.data("perm-modificar2") == 1);
+  var valorPrevio2   = String($cb.data("prev2")); // 'si' | 'no'
+  var valorNuevo2    = $cb.is(":checked") ? "si" : "no";
+
+  // 1) Sin guardar ni modificar: nunca debería disparar, pero por seguridad:
+  if(!permGuardar2 && !permModificar2){
+    $cb.prop('checked', (valorPrevio2 === 'si'));
+    showNotify2("Sin permiso para modificar", false);
+    return;
+  }
+
+  // 2) Si NO tiene modificar:
+  // - Puede pasar de 'no' -> 'si'
+  // - NO puede pasar de 'si' -> 'no' (revertir y salir)
+  if(!permModificar2){
+    if(valorPrevio2 === 'si' && valorNuevo2 === 'no'){
+      // No permitido apagar
+      $cb.prop('checked', true);
+      showNotify2("Solo puedes prender, no apagar", false);
+      return;
+    }
+  }
+
+  // Pintado optimista
+  $("#color_SINXML" + id).css('background-color', (valorNuevo2 === 'si') ? '#ceffcc' : '#e9d8ee');
+
+  $.ajax({
+    url: 'pagoproveedores/controladorPP.php',
+    type: 'POST',
+    data: { SINXML_id: id, SINXML_text: valorNuevo2 },
+    beforeSend: function(){
+      $('#pasarpagado2').html('cargando...');
+    },
+    success: function(resp){
+      // Éxito → fijar nuevo prev2io
+      $cb.data("prev2", valorNuevo2);
+
+      // 3) Regla clave: si SOLO tiene guardar y acaba de prender -> BLOQUEAR
+      if(!permModificar2 && permGuardar2 && valorNuevo2 === 'si'){
+        $cb.prop('disabled', true)
+           .css('cursor','not-allowed')
+           .attr('title','Autorizado (bloqueado)');
+      }
+
+      $('#pasarpagado2').html("<span>ACTUALIZADO</span>").fadeIn().delay(500).fadeOut();
+      showNotify2("Autorización actualizada ✅", true);
+	  	loadAUT(1);
+    },
+
+    error: function(xhr){
+      // Rollback total
+      var volverSi = (valorPrevio2 === 'si');
+      $cb.prop('checked', volverSi);
+      $("#color_SINXML" + id).css('background-color', volverSi ? '#ceffcc' : '#e9d8ee');
+
+      showNotify2("❌ Error de conexión (" + xhr.status + ")", false);
+    }
+  });
+}
+
+function showNotify2(msg, ok){
+  $("#ajax-notification").stop(true,true)
+    .text(msg)
+    .css('background', ok ? '#4CAF50' : '#E53935')
+    .fadeIn(150).delay(1000).fadeOut(300);
 }
 
 
@@ -183,6 +353,7 @@ function recalcularTotal() {
 		success:function(data){
 		var result = data.split('^');				
 		$('#pasarpagado2').html("<span id='ACTUALIZADO' >"+result[0]+"</span>");
+		loadAUT(1);
 		
 		if(result[1]=='si'){
 		$('#color_RESPONSABLE_EVENTO'+RESPONSABLE_EVENTO_id).css('background-color', '#ceffcc');
@@ -220,13 +391,13 @@ function recalcularTotal() {
 	},
 		success:function(data){
 		var result = data.split('^');				
-		$('#STATUS_AUDITORIA1').html("ACTUALIZADO").fadeIn().delay(1000).fadeOut();
-		load2(1);
+		$('#pasarpagado2').html("<span id='ACTUALIZADO' >"+result[0]+"</span>");
+		loadAUT(1);
 		
 
-		if(result[1]=='si'){
-		$('#color_AUDITORIA1'+AUDITORIA1_id).css('background-color', '#ceffcc');
-		}
+	if(result[1]=='si'){
+	$('#color_AUDITORIA1'+AUDITORIA1_id).css('background-color', '#ceffcc');
+	}
 		if(result[1]=='no'){
 		$('#color_AUDITORIA1'+AUDITORIA1_id).css('background-color', '#e9d8ee');
 		}
@@ -266,6 +437,7 @@ function recalcularTotal() {
 		success:function(data){
 		var result = data.split('^');				
 		$('#pasarpagado2').html("Cargando...").fadeIn().delay(500).fadeOut();
+		loadAUT(1);
 
 		if(result[1]=='si'){
 		$('#color_AUDITORIA2'+AUDITORIA2_id).css('background-color', '#ceffcc');
@@ -300,6 +472,7 @@ function recalcularTotal() {
 		success:function(data){
 		var result = data.split('^');				
 		$('#pasarpagado2').html("Cargando...").fadeIn().delay(500).fadeOut();
+		loadAUT(1);
 		
 		if(result[1]=='si'){
 		$('#color_FINANZAS'+FINANZAS_id).css('background-color', '#ceffcc');
@@ -332,6 +505,7 @@ function recalcularTotal() {
 		success:function(data){
 		var result = data.split('^');				
 		$('#pasarpagado2').html("Cargando...").fadeIn().delay(500).fadeOut();
+		loadAUT(1);
 		
 		if(result[1]=='si'){
 		$('#color_VENTAS'+VENTAS_id).css('background-color', '#ceffcc');
@@ -396,6 +570,7 @@ $("#ID_RELACIONADO_2").val("");
 
 $("#FECHA_DE_PAGO").val("");
 $("#FECHA_DE_PAGO2a").val("");
+$("#FECHA_DE_PAGO_VACIO").prop("checked",false);
 
 $("#FECHA_A_DEPOSITAR_2").val("");
  $("#STATUS_DE_PAGO_2").val("");
@@ -441,9 +616,18 @@ $("#FECHA_A_DEPOSITAR_2").val("");
 }
 
 
-		$(function() {
-			loadAUT(1);
-		});
+         $(function() {
+                const triggerSearch = () => loadAUT(1);
+
+                $('#target500').on('keydown', 'thead input, thead select', function(event) {
+                        if (event.key === 'Enter' || event.which === 13) {
+                                event.preventDefault();
+                                triggerSearch();
+                        }
+                });
+
+                loadAUT(1);
+        });
 		function loadAUT(page){
 			var query=$("#NOMBRE_EVENTO").val();
 			var DEPARTAMENTO2=$("#DEPARTAMENTO2WE").val();
@@ -469,6 +653,7 @@ var PFORMADE_PAGO=$("#PFORMADE_PAGO_2").val();
 
 var FECHA_DE_PAGO=$("#FECHA_DE_PAGO").val();
 var FECHA_DE_PAGO2a=$("#FECHA_DE_PAGO2a").val();
+var FECHA_DE_PAGO_VACIO=$("#FECHA_DE_PAGO_VACIO").is(":checked") ? '1' : '';
 
 var FECHA_A_DEPOSITAR=$("#FECHA_A_DEPOSITAR_2").val();
 var STATUS_DE_PAGO=$("#STATUS_DE_PAGO_2").val();
@@ -604,6 +789,7 @@ var ULTIMA_CARGA_DATOBANCA=$("#ULTIMA_CARGA_DATOBANCA").val();
 
 'FECHA_DE_PAGO':FECHA_DE_PAGO,
 'FECHA_DE_PAGO2a':FECHA_DE_PAGO2a,
+'FECHA_DE_PAGO_VACIO':FECHA_DE_PAGO_VACIO,
 
 'NUMERO_EVENTO_orden':NUMERO_EVENTO_orden,
 'TIPO_CAMBIOP':TIPO_CAMBIOP,

@@ -136,7 +136,7 @@ $ULTIMA_CARGA_DATOBANCA = isset($_POST["ULTIMA_CARGA_DATOBANCA"])?trim($_POST["U
 
 
 
-$per_page=intval($_POST["per_pageAUT"]);
+$per_page=intval($_POST["per_page"]);
 	$campos="*";
 	//Variables de paginación
 	$page = (isset($_POST["page"]) && !empty($_POST["page"]))?$_POST["page"]:1;
@@ -1404,6 +1404,7 @@ $colspan += 1; ?>/>
 
 
 
+
 <td style="text-align:center; background:
     <?php
     if ($row["STATUS_DE_PAGO"] == 'APROBADO') {
@@ -1416,17 +1417,22 @@ $colspan += 1; ?>/>
     ?>" 
     id="color_pagado1a<?php echo $row["02SUBETUFACTURAid"]; ?>">
 
-    <input type="checkbox" style="width:30PX;" class="form-check-input" 
-           id="STATUS_AUDITORIA1<?php echo $row["02SUBETUFACTURAid"]; ?>" 
-           name="STATUS_AUDITORIA1<?php echo $row["02SUBETUFACTURAid"]; ?>" 
+    <input type="checkbox" style="width:30PX;" class="form-check-input"
+           id="STATUS_AUDITORIA1<?php echo $row["02SUBETUFACTURAid"]; ?>"
+           name="STATUS_AUDITORIA1<?php echo $row["02SUBETUFACTURAid"]; ?>"
            value="<?php echo $row["02SUBETUFACTURAid"]; ?>"
-           <?php 
+           <?php
+           $permisoVerAUDITORIA1       = $database->variablespermisos('', 'AUDITORIA1', 'ver') == 'si';
+           $permisoModificarAUDITORIA1 = $database->variablespermisos('', 'AUDITORIA1', 'modificar') == 'si';
+
            // Condición de estatus
            if ($row["STATUS_DE_PAGO"] == 'APROBADO' || $row["STATUS_DE_PAGO"] == 'PAGADO') {
-               echo 'checked disabled';
+               echo $permisoModificarAUDITORIA1
+                   ? 'checked onclick="STATUS_AUDITORIA1('.$row["02SUBETUFACTURAid"].')"'
+                   : 'checked disabled';
            } else {
                // Validación de permisoS
-               if($database->variablespermisos('','AUDITORIA1','ver') == 'si'){
+               if ($permisoVerAUDITORIA1) {
                    echo 'onclick="STATUS_AUDITORIA1('.$row["02SUBETUFACTURAid"].')"';
                } else {
                    echo 'disabled';
@@ -1439,6 +1445,7 @@ $colspan += 1; ?>/>
 
 
 <td style="text-align:center; background:
+
     <?php echo ($row["STATUS_FINANZAS"] == 'si') ? '#ceffcc' : '#e9d8ee'; ?>;" 
     id="color_FINANZAS<?php echo $row["02SUBETUFACTURAid"]; ?>">
 
@@ -1448,13 +1455,18 @@ $colspan += 1; ?>/>
         id="STATUS_FINANZAS<?php echo $row["02SUBETUFACTURAid"]; ?>"  
         name="STATUS_FINANZAS<?php echo $row["02SUBETUFACTURAid"]; ?>" 
         value="<?php echo $row["02SUBETUFACTURAid"]; ?>"
-        <?php 
+       <?php
+        $permisoVerFINANZAS       = $database->variablespermisos('', 'DIRECCION1', 'ver') == 'si';
+        $permisoModificarFINANZAS = $database->variablespermisos('', 'DIRECCION1', 'modificar') == 'si';
+
         if ($row["STATUS_FINANZAS"] == 'si') {
-            // Ya autorizado → marcado y bloqueado
-            echo 'checked disabled style="cursor:not-allowed;" title="Sin permiso para modificar"';
+            // Ya autorizado → marcado y bloqueado salvo que exista permiso de modificación
+            echo $permisoModificarFINANZAS
+                ? 'checked onclick="STATUS_FINANZAS('.$row["02SUBETUFACTURAid"].')"'
+                : 'checked disabled style="cursor:not-allowed;" title="Sin permiso para modificar"';
         } else {
             // Validar permiso antes de habilitar
-            if($database->variablespermisos('','DIRECCION1','ver') == 'si'){
+            if($permisoVerFINANZAS){
                 echo 'onclick="STATUS_FINANZAS('.$row["02SUBETUFACTURAid"].')"';
             } else {
                 // Sin permiso → deshabilitado y con aviso
@@ -1471,47 +1483,57 @@ $colspan += 1; ?>/>
     <?php echo ($row["STATUS_DE_PAGO"] == 'PAGADO') ? '#ceffcc' : '#e9d8ee'; ?>;" 
     id="color_pagado1a<?php echo $row["02SUBETUFACTURAid"]; ?>">
 
-    <input type="checkbox" 
-        style="width:30px;" 
-        class="form-check-input" 
-        id="pasarpagado1a<?php echo $row["02SUBETUFACTURAid"]; ?>" 
-        name="pasarpagado1a<?php echo $row["02SUBETUFACTURAid"]; ?>" 
+    <input type="checkbox"
+        style="width:30px;"
+        class="form-check-input"
+        id="pasarpagado1a<?php echo $row["02SUBETUFACTURAid"]; ?>"
+        name="pasarpagado1a<?php echo $row["02SUBETUFACTURAid"]; ?>"
         value="<?php echo $row["02SUBETUFACTURAid"]; ?>"
-        <?php 
-        if ($row["STATUS_DE_PAGO"] == 'PAGADO') {
-            // Ya está pagado → marcado y bloqueado
-            echo 'checked disabled style="cursor:not-allowed;" title="Ya está pagado"';
-        } else {
-            // Validar permiso FINANZAS
-            if($database->variablespermisos('','FINANZAS','ver') == 'si'){
-                echo 'onclick="pasarpagado2('.$row["02SUBETUFACTURAid"].')"';
+        <?php
+            $permisoVerFINANZAS       = $database->variablespermisos('', 'FINANZAS', 'ver') == 'si';
+            $permisoModificarFINANZAS = $database->variablespermisos('', 'FINANZAS', 'modificar') == 'si';
+
+            if ($row["STATUS_DE_PAGO"] == 'PAGADO') {
+                echo $permisoModificarFINANZAS
+                    ? 'checked onclick="pasarpagado2('.$row["02SUBETUFACTURAid"].')"'
+                    : 'checked disabled style="cursor:not-allowed;" title="Ya está pagado"';
             } else {
-                // Sin permiso → bloqueado y con aviso
-                echo 'disabled style="cursor:not-allowed;" title="Sin permiso para modificar"';
+                if($permisoVerFINANZAS){
+                    echo 'onclick="pasarpagado2('.$row["02SUBETUFACTURAid"].')"';
+                } else {
+                    // Sin permiso → bloqueado y con aviso
+                    echo 'disabled style="cursor:not-allowed;" title="Sin permiso para modificar"';
+                }
             }
-        }
         ?>
     />
     <?php $colspan += 1; ?>
+
 </td>
+
 
 
 <td style="text-align:center; background:
     <?php echo ($row["STATUS_AUDITORIA2"] == 'si') ? '#ceffcc' : '#e9d8ee'; ?>;" 
     id="color_AUDITORIA2<?php echo $row["02SUBETUFACTURAid"]; ?>">
 
-    <input type="checkbox" 
-        style="width:30px; cursor:pointer;" 
-        class="form-check-input" 
-        id="STATUS_AUDITORIA2<?php echo $row["02SUBETUFACTURAid"]; ?>"  
-        name="STATUS_AUDITORIA2<?php echo $row["02SUBETUFACTURAid"]; ?>" 
+    <input type="checkbox"
+        style="width:30px; cursor:pointer;"
+        class="form-check-input"
+        id="STATUS_AUDITORIA2<?php echo $row["02SUBETUFACTURAid"]; ?>"
+        name="STATUS_AUDITORIA2<?php echo $row["02SUBETUFACTURAid"]; ?>"
         value="<?php echo $row["02SUBETUFACTURAid"]; ?>"
-        <?php 
+        <?php
+        $permisoVerAUDITORIA2       = $database->variablespermisos('', 'AUDITORIA2', 'ver') == 'si';
+        $permisoModificarAUDITORIA2 = $database->variablespermisos('', 'AUDITORIA2', 'modificar') == 'si';
+
         if ($row["STATUS_AUDITORIA2"] == 'si') {
-            // Ya autorizado → marcado y bloqueado
-            echo 'checked disabled style="cursor:not-allowed;" title="Ya autorizado"';
+            // Ya autorizado → marcado y bloqueado salvo permiso de modificación
+            echo $permisoModificarAUDITORIA2
+                ? 'checked onclick="STATUS_AUDITORIA2('.$row["02SUBETUFACTURAid"].')"'
+                : 'checked disabled style="cursor:not-allowed;" title="Ya autorizado"';
         } else {
-            if($database->variablespermisos('','AUDITORIA2','ver') == 'si'){
+            if($permisoVerAUDITORIA2){
                 // Permitir acción → al marcar se llama a tu función y se bloquea el checkbox
                 echo 'onclick="STATUS_AUDITORIA2('.$row["02SUBETUFACTURAid"].'); this.disabled=true; this.style.cursor=\'not-allowed\';"';
             } else {
@@ -1522,6 +1544,7 @@ $colspan += 1; ?>/>
         ?>
     />
     <?php $colspan += 1; ?>
+
 </td>
 
 
@@ -2218,7 +2241,7 @@ $regreso ="";
 
 
 
-
+<?php if($database->variablespermisos('','BOTONVIATICOSREEMBOLSO','ver')=='si'){ ?>
      <td>
 	<?php
 $VIATICOSOPRO = isset($row['VIATICOSOPRO'])?$row['VIATICOSOPRO']:'' ;
@@ -2248,18 +2271,10 @@ $VIATICOSOPRO = isset($row['VIATICOSOPRO'])?$row['VIATICOSOPRO']:'' ;
             </button>
         </a>
 		<?php endif; ?>
-			<?php
-$VIATICOSOPRO = isset($row['VIATICOSOPRO'])?$row['VIATICOSOPRO']:'' ;
- if ($VIATICOSOPRO == "PAGOS CON UNA SOLA FACTURA") : ?>
-        <a href="PAGOPROVEEDORF2P.php?num_evento=<?php echo urlencode($row['NUMERO_EVENTO']); ?>&ID_RELACIONADO=<?php echo urlencode($row['NUMERO_CONSECUTIVO_PROVEE']); ?>&NUMERO_CONSECUTIVO_PROVEE=<?php echo urlencode($row['NUMERO_CONSECUTIVO_PROVEE']); ?>">
-            <button style="text-align:center;width:160px"class="btn btn-info btn-xs" type="button">
-                UNA FACTURA <br>VARIOS PAGOS
-            </button>
-        </a>
-		<?php endif; ?>
+
     </td>
 
-	
+	<?php } ?>
 	
 
 <?php /*termina copiar y terminaA5*/ ?> 
