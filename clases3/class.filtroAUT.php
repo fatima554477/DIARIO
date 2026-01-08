@@ -137,16 +137,21 @@ class orders extends accesoclase {
 	
 	
 	
-//STATUS_EVENTO,NOMBRE_CORTO_EVENTO,NOMBRE_EVENTO
-	public function getData($tables3,$campos,$search){
+public function getData($tables3,$campos,$search){
 		$offset = max(0, (int) $search['offset']);
 		$per_page = max(1, (int) $search['per_page']);
 		$tables = '02SUBETUFACTURA';
 		$tables2 = '02XML';	
         $tables4 = '02DATOSBANCARIOS1';			
+		if ($campos === '*') {
+			$campos = '02SUBETUFACTURA.*, 02XML.*';
+		}
 		//$sWhereCC ="  02XML.`idRelacion` = 02SUBETUFACTURA.id AND ";
+
 		$sWhereCC =" ON 02SUBETUFACTURA.id = 02XML.`ultimo_id` ";
+
 		$sWhere2="";$sWhere3="";
+
 		
 		if($search['NUMERO_CONSECUTIVO_PROVEE']!=""){
 			$sWhere2.="  $tables.NUMERO_CONSECUTIVO_PROVEE LIKE '%".$search['NUMERO_CONSECUTIVO_PROVEE']."%' and ";}
@@ -480,11 +485,11 @@ $campos_eventos = "
 		$whereClause = $sWhere3;
 		$orderClause = " order by ".$sWhere3campo;
 
-                $sql="SELECT $campos , 02SUBETUFACTURA.id as 02SUBETUFACTURAid, RFC_PROVEEDOR as RFC_PROVEEDOR1trim FROM $tables LEFT JOIN $tables2 $sWhere $whereClause $orderClause LIMIT $offset,$per_page";
+                          $sql="SELECT DISTINCT $campos , 02SUBETUFACTURA.id as 02SUBETUFACTURAid, RFC_PROVEEDOR as RFC_PROVEEDOR1trim FROM $tables LEFT JOIN $tables2 $sWhere $whereClause $orderClause LIMIT $offset,$per_page";
                 $query=$this->mysqli->query($sql);
 
                 // Consulta de conteo optimizada sin SQL_CALC_FOUND_ROWS
-                $countSql = "SELECT COUNT(*) AS total FROM $tables LEFT JOIN $tables2 $sWhere $whereClause";
+                $countSql = "SELECT COUNT(DISTINCT 02SUBETUFACTURA.id) AS total FROM $tables LEFT JOIN $tables2 $sWhere $whereClause";
                 $totalResult = $this->mysqli->query($countSql);
                 $totalRow = $totalResult ? $totalResult->fetch_assoc() : ['total' => 0];
                 $nums_row = isset($totalRow['total']) ? (int)$totalRow['total'] : 0;

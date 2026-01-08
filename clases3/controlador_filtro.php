@@ -135,12 +135,6 @@ $P_NUMERO_CUENTA_SWIFT_1 = isset($_POST["P_NUMERO_CUENTA_SWIFT_1"])?trim($_POST[
 $FOTO_ESTADO_PROVEE = isset($_POST["FOTO_ESTADO_PROVEE"])?trim($_POST["FOTO_ESTADO_PROVEE"]):"";  
 $ULTIMA_CARGA_DATOBANCA = isset($_POST["ULTIMA_CARGA_DATOBANCA"])?trim($_POST["ULTIMA_CARGA_DATOBANCA"]):"";  
 
-if($_SESSION['num_evento']==true){
-	$NUMERO_EVENTO = $_SESSION['num_evento'];
-}
-if($_POST['NUMERO_EVENTO']==true){
-	$NUMERO_EVENTO = $_POST['NUMERO_EVENTO'];	
-}
 
 $per_page = isset($_POST["per_page"]) ? intval($_POST["per_page"]) :100 ;
 if ($per_page <= 0) {
