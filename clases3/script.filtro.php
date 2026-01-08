@@ -619,7 +619,7 @@ $("#FECHA_A_DEPOSITAR_2").val("");
          $(function() {
                 const triggerSearch = () => loadAUT(1);
 
-                $('#target500').on('keydown', 'thead input, thead select', function(event) {
+                $('#target30').on('keydown', 'thead input, thead select', function(event) {
                         if (event.key === 'Enter' || event.which === 13) {
                                 event.preventDefault();
                                 triggerSearch();
