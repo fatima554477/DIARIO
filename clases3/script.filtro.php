@@ -735,13 +735,13 @@ var ULTIMA_CARGA_DATOBANCA=$("#ULTIMA_CARGA_DATOBANCA").val();
 
 
 /*termina copiar y pegar*/
-			
 			var per_page=$("#per_pageAUT").val();
-			var parametros = {
+            var parametros = {
 			"actionAUT":"ajaxAUT",
 			"page":page,
 			'query':query,
 			'per_pageAUT':per_page,
+			'per_page':per_page,
 
 /*inicia copiar y pegar*/'NUMERO_CONSECUTIVO_PROVEE':NUMERO_CONSECUTIVO_PROVEE,
 'NOMBRE_COMERCIAL':NOMBRE_COMERCIAL,
@@ -780,7 +780,9 @@ var ULTIMA_CARGA_DATOBANCA=$("#ULTIMA_CARGA_DATOBANCA").val();
 'MONTO_DE_COMISION':MONTO_DE_COMISION,
 'POLIZA_NUMERO':POLIZA_NUMERO,
 'NOMBRE_DEL_EJECUTIVO':NOMBRE_DEL_EJECUTIVO,
+'NOMBRE_DEL_AYUDO':NOMBRE_DEL_AYUDO,
 'OBSERVACIONES_2':OBSERVACIONES_2,
+
 'FECHA_DE_LLENADO':FECHA_DE_LLENADO,
 'hiddenpagoproveedores':hiddenpagoproveedores,
 'RAZON_SOCIAL_orden':RAZON_SOCIAL_orden,

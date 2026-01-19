@@ -136,17 +136,24 @@ $FOTO_ESTADO_PROVEE = isset($_POST["FOTO_ESTADO_PROVEE"])?trim($_POST["FOTO_ESTA
 $ULTIMA_CARGA_DATOBANCA = isset($_POST["ULTIMA_CARGA_DATOBANCA"])?trim($_POST["ULTIMA_CARGA_DATOBANCA"]):"";  
 
 
-$per_page = isset($_POST["per_page"]) ? intval($_POST["per_page"]) :100 ;
+$per_page = isset($_POST["per_page"]) ? intval($_POST["per_page"]) : (isset($_POST["per_pageAUT"]) ? intval($_POST["per_pageAUT"]) : 100);
 if ($per_page <= 0) {
         $per_page = 100;
 }
-	$campos="*";
+$campos="*";
+
 	//Variables de paginación
+
 	$page = (isset($_POST["page"]) && !empty($_POST["page"]))?$_POST["page"]:1;
+
 	$adjacents  = 4; //espacio entre páginas después del número de adyacentes
+
 	$offset = ($page - 1) * $per_page;
+
 	
+
 	$search=array(
+
 
 "NUMERO_CONSECUTIVO_PROVEE"=>$NUMERO_CONSECUTIVO_PROVEE,
 "NOMBRE_COMERCIAL"=>$NOMBRE_COMERCIAL,
@@ -709,7 +716,7 @@ echo $NUMERO_CONSECUTIVO_PROVEE; ?>"></td>
 if($database->plantilla_filtro($nombreTabla,"VIATICOSOPRO",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
              <td style="background:#c9e8e8">
 				
-			<select class="form-select mb-3" aria-label="Default select example" id="VIATICOSOPRO_2" onchange="load(1);">
+			<select class="form-select mb-3" aria-label="Default select example" id="VIATICOSOPRO_2" onchange="loadAUT(1);">
 			<option value="">TODOS</option>
 			
 			<option value="PAGO A PROVEEDOR" <?php if($_POST['VIATICOSOPRO']=='PAGO A PROVEEDOR'){echo 'selected';} ?>>PAGO A PROVEEDOR</option>
@@ -749,7 +756,7 @@ if($database->plantilla_filtro($nombreTabla,"RAZON_SOCIAL",$altaeventos,$DEPARTA
         
         <select style="width:80px; border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: 0;"
                 id="RAZON_SOCIAL_orden" 
-                onchange="load('<?php echo $_POST['page']; ?>')">
+                onchange="loadAUT('<?php echo $_POST['page']; ?>')">
             <option value="">NORMAL</option>
             <option value="asc" <?= $_POST['RAZON_SOCIAL_orden']=='asc' ? 'selected' : '' ?>>ASC</option>
             <option value="desc" <?= $_POST['RAZON_SOCIAL_orden']=='desc' ? 'selected' : '' ?>>DESC</option>
@@ -768,7 +775,7 @@ if($database->plantilla_filtro($nombreTabla,"RFC_PROVEEDOR",$altaeventos,$DEPART
 <input type="text"  style="width:200PX;" class="form-control" id="RFC_PROVEEDOR_2" value="<?php 
 echo $RFC_PROVEEDOR; ?>"/>
 
-<select style="width:80PX; padding-bottom:0px; margin-bottom:0px;" id="RFC_PROVEEDOR_orden" href="javascript:void(0);" onchange="load('<?php echo $_POST['page']; ?>')">
+<select style="width:80PX; padding-bottom:0px; margin-bottom:0px;" id="RFC_PROVEEDOR_orden" href="javascript:void(0);" onchange="loadAUT('<?php echo $_POST['page']; ?>')">
 
 			<option value="">NORMAL</option>
 			
@@ -795,7 +802,7 @@ if($database->plantilla_filtro($nombreTabla,"NUMERO_EVENTO",$altaeventos,$DEPART
 <input type="text" style="width:200PX;" class="form-control" id="NUMERO_EVENTO_2" value="<?php 
 echo $NUMERO_EVENTO; ?>">
 
-<select style="width:80PX; padding-bottom:0px; margin-bottom:0px;" id="NUMERO_EVENTO_orden" href="javascript:void(0);" onchange="load('<?php echo $_POST['page']; ?>')">
+<select style="width:80PX; padding-bottom:0px; margin-bottom:0px;" id="NUMERO_EVENTO_orden" href="javascript:void(0);" onchange="loadAUT('<?php echo $_POST['page']; ?>')">
 
 			<option value="">NORMAL</option>
 			
@@ -839,7 +846,7 @@ if($database->plantilla_filtro($nombreTabla,"MONTO_FACTURA",$altaeventos,$DEPART
 echo $MONTO_FACTURA; ?>">
 
 
-<select style="width:80PX; padding-bottom:0px; margin-bottom:0px;" id="MONTO_FACTURA_orden" href="javascript:void(0);" onchange="load('<?php echo $_POST['page']; ?>')">
+<select style="width:80PX; padding-bottom:0px; margin-bottom:0px;" id="MONTO_FACTURA_orden" href="javascript:void(0);" onchange="loadAUT('<?php echo $_POST['page']; ?>')">
 
 			<option value="">NORMAL</option>
 			
@@ -898,7 +905,7 @@ echo $PENDIENTE_PAGO; ?>"></td>
 <?php  
 if($database->plantilla_filtro($nombreTabla,"TIPO_DE_MONEDA",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
     <td style="background:#c9e8e8">
-        <select class="form-select mb-3" aria-label="Default select example" id="TIPO_DE_MONEDA_2" name="TIPO_DE_MONEDA" onchange="load(1);">
+        <select class="form-select mb-3" aria-label="Default select example" id="TIPO_DE_MONEDA_2" name="TIPO_DE_MONEDA" onchange="loadAUT(1);">
             <option value="">TODOS</option>
             <option style="background: #c9e8e8" value="MXN" <?php if($TIPO_DE_MONEDA=='MXN'){echo "selected";} ?>>MXN (Peso mexicano)</option>
             <option style="background: #a3e4d7" value="USD" <?php if($TIPO_DE_MONEDA=='USD'){echo "selected";} ?>>USD (Dólar estadounidense)</option>
@@ -970,7 +977,7 @@ echo $FECHA_A_DEPOSITAR; ?>"></td>
 if($database->plantilla_filtro($nombreTabla,"STATUS_DE_PAGO",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
              </br><td style="background:#f48a81">
 				
-			<select class="form-select mb-3" aria-label="Default select example" id="STATUS_DE_PAGO_2" onchange="load(1);">
+			<select class="form-select mb-3" aria-label="Default select example" id="STATUS_DE_PAGO_2" onchange="loadAUT(1);">
 			<option value="">TODOS</option>
 			<option value="SOLICITADO" <?php if($_POST['STATUS_DE_PAGO']=='SOLICITADO'){echo 'selected';} ?>>SOLICITADO</option>
 			<option value="APROBADO" <?php if($_POST['STATUS_DE_PAGO']=='APROBADO'){echo 'selected';} ?>>APROBADO</option>
@@ -1378,6 +1385,9 @@ foreach ($datos as $key=>$row){
     $fondo_existe_xml2 = "";
     $nombreComercialActual = isset($row['NOMBRE_COMERCIAL']) ? trim($row['NOMBRE_COMERCIAL']) : '';
     $identificadorProveedor = $nombreComercialActual !== '' ? $nombreComercialActual : (isset($row['RFC_PROVEEDOR']) ? trim($row['RFC_PROVEEDOR']) : '');
+    $numeroEventoMostrar = isset($row['NUMERO_EVENTO_REAL']) && trim((string) $row['NUMERO_EVENTO_REAL']) !== ''
+        ? $row['NUMERO_EVENTO_REAL']
+        : (isset($row['NUMERO_EVENTO']) ? $row['NUMERO_EVENTO'] : '');
     $nombreComercialMostrar = $nombreComercialActual !== '' ? $nombreComercialActual : $identificadorProveedor;
 
 // 0. Si está AUTORIZADO (AUDITORIA3) → blanco SIEMPRE
@@ -1571,7 +1581,7 @@ $colspan += 1; ?>/>
                 $atributosVentas[] = 'checked';
             }
 
-            $numeroEventoRegistro = isset($row["NUMERO_EVENTO"]) ? strtoupper(trim((string) $row["NUMERO_EVENTO"])) : '';
+             $numeroEventoRegistro = strtoupper(trim((string) $numeroEventoMostrar));
             $tienePermisoVenta = $numeroEventoRegistro !== '' && isset($eventosAutorizadosVentas[$numeroEventoRegistro]);
 
             if (!$tienePermisoVenta) {
@@ -1764,8 +1774,8 @@ $colspan += 1; ?>/>
 
 
 <?php  if($database->plantilla_filtro($nombreTabla,"NUMERO_EVENTO",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center;"> 
-    <a href="calendarioDEeventos2.php?idevento=<?php echo urlencode($database->iralevento($row['NUMERO_EVENTO'])); ?>"target="_blank">
-        <?php $colspan += 1; echo $row['NUMERO_EVENTO']; ?>
+    <a href="calendarioDEeventos2.php?idevento=<?php echo urlencode($database->iralevento($numeroEventoMostrar)); ?>"target="_blank">
+        <?php $colspan += 1; echo $numeroEventoMostrar; ?>
     </a>
 </td>
 <?php } ?>
@@ -2655,7 +2665,7 @@ $regreso ="";
 	<?php
 $VIATICOSOPRO = isset($row['VIATICOSOPRO'])?$row['VIATICOSOPRO']:'' ;
  if ($VIATICOSOPRO == "VIATICOS") : ?>
-        <a href="viaticos.php?num_evento=<?php echo urlencode($row['NUMERO_EVENTO']); ?>&ID_RELACIONADO=<?php echo urlencode($row['NUMERO_CONSECUTIVO_PROVEE']); ?>&NUMERO_CONSECUTIVO_PROVEE=<?php echo urlencode($row['NUMERO_CONSECUTIVO_PROVEE']); ?>">
+       <a href="viaticos.php?num_evento=<?php echo urlencode($numeroEventoMostrar); ?>&ID_RELACIONADO=<?php echo urlencode($row['NUMERO_CONSECUTIVO_PROVEE']); ?>&NUMERO_CONSECUTIVO_PROVEE=<?php echo urlencode($row['NUMERO_CONSECUTIVO_PROVEE']); ?>">
             <button style="text-align:center;width:160px"class="btn btn-info btn-xs" type="button">
                 VIÁTICOS
             </button></center>
@@ -2665,7 +2675,7 @@ $VIATICOSOPRO = isset($row['VIATICOSOPRO'])?$row['VIATICOSOPRO']:'' ;
 	<?php
 $VIATICOSOPRO = isset($row['VIATICOSOPRO'])?$row['VIATICOSOPRO']:'' ;
  if ($VIATICOSOPRO == "REEMBOLSO") : ?>
-        <a href="reembolsos.php?num_evento=<?php echo urlencode($row['NUMERO_EVENTO']); ?>&ID_RELACIONADO=<?php echo urlencode($row['NUMERO_CONSECUTIVO_PROVEE']); ?>&NUMERO_CONSECUTIVO_PROVEE=<?php echo urlencode($row['NUMERO_CONSECUTIVO_PROVEE']); ?>">
+        <a href="reembolsos.php?num_evento=<?php echo urlencode($numeroEventoMostrar); ?>&ID_RELACIONADO=<?php echo urlencode($row['NUMERO_CONSECUTIVO_PROVEE']); ?>&NUMERO_CONSECUTIVO_PROVEE=<?php echo urlencode($row['NUMERO_CONSECUTIVO_PROVEE']); ?>">
             <button style="text-align:center;width:160px"class="btn btn-info btn-xs" type="button">
                 REEMBOLSO
             </button>
@@ -2674,7 +2684,7 @@ $VIATICOSOPRO = isset($row['VIATICOSOPRO'])?$row['VIATICOSOPRO']:'' ;
 	<?php
 $VIATICOSOPRO = isset($row['VIATICOSOPRO'])?$row['VIATICOSOPRO']:'' ;
  if ($VIATICOSOPRO == "PAGO A PROVEEDOR CON DOS O MAS FACTURAS") : ?>
-        <a href="PAGOPROVEEDOR4.php?num_evento=<?php echo urlencode($row['NUMERO_EVENTO']); ?>&ID_RELACIONADO=<?php echo urlencode($row['NUMERO_CONSECUTIVO_PROVEE']); ?>&NUMERO_CONSECUTIVO_PROVEE=<?php echo urlencode($row['NUMERO_CONSECUTIVO_PROVEE']); ?>">
+        <a href="PAGOPROVEEDOR4.php?num_evento=<?php echo urlencode($numeroEventoMostrar); ?>&ID_RELACIONADO=<?php echo urlencode($row['NUMERO_CONSECUTIVO_PROVEE']); ?>&NUMERO_CONSECUTIVO_PROVEE=<?php echo urlencode($row['NUMERO_CONSECUTIVO_PROVEE']); ?>">
             <button style="text-align:center;width:160px"class="btn btn-info btn-xs" type="button">
                 PAGO PROVEEDOR
             </button>
@@ -2744,7 +2754,7 @@ endif;
 
 
 
-<input type="button" name="view2" value="BORRAR" id="<?php echo $row["02SUBETUFACTURAid"]; ?>" class="btn btn-info btn-xs view_dataSBborrar" />
+<input type="button" name="view2" value="BORRAR" id="<?php echo $row["02SUBETUFACTURAid"]; ?>" class="btn btn-info btn-xs view_dataSBborrarGO" />
 <?php } ?></td>	
 <td>
     <input type="checkbox" 

@@ -137,19 +137,18 @@ class orders extends accesoclase {
 	
 	
 	
-public function getData($tables3,$campos,$search){
-		$offset = max(0, (int) $search['offset']);
-		$per_page = max(1, (int) $search['per_page']);
+	//STATUS_EVENTO,NOMBRE_CORTO_EVENTO,NOMBRE_EVENTO
+	public function getData($tables3,$campos,$search){
+		$offset=$search['offset'];
+		$per_page=$search['per_page'];
 		$tables = '02SUBETUFACTURA';
 		$tables2 = '02XML';	
         $tables4 = '02DATOSBANCARIOS1';			
 		if ($campos === '*') {
 			$campos = '02SUBETUFACTURA.*, 02XML.*';
 		}
-		//$sWhereCC ="  02XML.`idRelacion` = 02SUBETUFACTURA.id AND ";
-
+		$campos .= ", COALESCE(NULLIF(02SUBETUFACTURA.NUMERO_EVENTO, 'NUMERO_EVENTO'), 04altaeventos.NUMERO_EVENTO) AS NUMERO_EVENTO_REAL";
 		$sWhereCC =" ON 02SUBETUFACTURA.id = 02XML.`ultimo_id` ";
-
 		$sWhere2="";$sWhere3="";
 
 		
@@ -249,10 +248,13 @@ public function getData($tables3,$campos,$search){
 			$sWhere2.="  $tables.MONTO_DE_COMISION = '".$search['MONTO_DE_COMISION']."' and ";}
 		if($search['POLIZA_NUMERO']!=""){
 			$sWhere2.="  $tables.POLIZA_NUMERO LIKE '%".$search['POLIZA_NUMERO']."%' and ";}
-		if($search['NOMBRE_DEL_EJECUTIVO']!=""){
-			$sWhere2.="  $tables.NOMBRE_DEL_EJECUTIVO LIKE '%".$search['NOMBRE_DEL_EJECUTIVO']."%' and ";}
-		if($search['NOMBRE_DEL_AYUDO']!=""){
-			$sWhere2.="  $tables.NOMBRE_DEL_AYUDO LIKE '%".$search['NOMBRE_DEL_AYUDO']."%' and ";}
+	if($search['NOMBRE_DEL_EJECUTIVO']!=""){
+			$nombreEjecutivo = strtolower(trim($search['NOMBRE_DEL_EJECUTIVO']));
+			$sWhere2.="  LOWER($tables.NOMBRE_DEL_EJECUTIVO) LIKE '%".$nombreEjecutivo."%' and ";}
+			if($search['NOMBRE_DEL_AYUDO']!=""){
+			$nombreAyudo = strtolower(trim($search['NOMBRE_DEL_AYUDO']));
+			$sWhere2.="  LOWER($tables.NOMBRE_DEL_AYUDO) LIKE '%".$nombreAyudo."%' and ";}
+
 		if($search['OBSERVACIONES_1']!=""){
 			$sWhere2.="  $tables.OBSERVACIONES_1 LIKE '%".$search['OBSERVACIONES_1']."%' and ";}
 		if($search['FECHA_DE_LLENADO']!=""){
@@ -482,14 +484,15 @@ $campos_eventos = "
 			$sWhere3campo = substr($sWhere3campo,0,-2);
 		}
 
-		$whereClause = $sWhere3;
-		$orderClause = " order by ".$sWhere3campo;
 
-                          $sql="SELECT DISTINCT $campos , 02SUBETUFACTURA.id as 02SUBETUFACTURAid, RFC_PROVEEDOR as RFC_PROVEEDOR1trim FROM $tables LEFT JOIN $tables2 $sWhere $whereClause $orderClause LIMIT $offset,$per_page";
+		$whereClause = $sWhere3;
+		$orderClause .= " GROUP BY 02SUBETUFACTURA.id ORDER BY " . $sWhere3campo;
+
+                $sql="SELECT $campos , 02SUBETUFACTURA.id as 02SUBETUFACTURAid, RFC_PROVEEDOR as RFC_PROVEEDOR1trim FROM $tables LEFT JOIN $tables2 $sWhere $whereClause $orderClause LIMIT $offset,$per_page";
                 $query=$this->mysqli->query($sql);
 
                 // Consulta de conteo optimizada sin SQL_CALC_FOUND_ROWS
-                $countSql = "SELECT COUNT(DISTINCT 02SUBETUFACTURA.id) AS total FROM $tables LEFT JOIN $tables2 $sWhere $whereClause";
+                $countSql = "SELECT COUNT(*) AS total FROM $tables LEFT JOIN $tables2 $sWhere $whereClause";
                 $totalResult = $this->mysqli->query($countSql);
                 $totalRow = $totalResult ? $totalResult->fetch_assoc() : ['total' => 0];
                 $nums_row = isset($totalRow['total']) ? (int)$totalRow['total'] : 0;
