@@ -147,9 +147,13 @@ class orders extends accesoclase {
 		if ($campos === '*') {
 			$campos = '02SUBETUFACTURA.*, 02XML.*';
 		}
-		$campos .= ", COALESCE(NULLIF(02SUBETUFACTURA.NUMERO_EVENTO, 'NUMERO_EVENTO'), 04altaeventos.NUMERO_EVENTO) AS NUMERO_EVENTO_REAL";
+	$campos .= ", COALESCE(NULLIF(02SUBETUFACTURA.NUMERO_EVENTO, 'NUMERO_EVENTO'), 04altaeventos.NUMERO_EVENTO) AS NUMERO_EVENTO_REAL";
 		$sWhereCC =" ON 02SUBETUFACTURA.id = 02XML.`ultimo_id` ";
 		$sWhere2="";$sWhere3="";
+		$nombreUsuarioSesionRaw = $_SESSION['NOMBREUSUARIO'] ?? '';
+		$nombreUsuarioSesion = mysqli_real_escape_string($this->mysqli, strtolower(trim($nombreUsuarioSesionRaw)));
+		$idSesion = mysqli_real_escape_string($this->mysqli, trim($_SESSION['idem'] ?? ''));
+		$nombreCompletoSesionSql = 'LOWER(TRIM(COALESCE(NULLIF(CONCAT_WS(" ", NULLIF(info_sesion.NOMBRE_1, ""), NULLIF(info_sesion.APELLIDO_PATERNO, ""), NULLIF(info_sesion.APELLIDO_MATERNO, "")), ""), "' . $nombreUsuarioSesion . '")))';
 
 		
 		if($search['NUMERO_CONSECUTIVO_PROVEE']!=""){
@@ -380,28 +384,24 @@ if ($sWhere2 != "") {
         INNER JOIN 01informacionpersonal
             ON 01informacionpersonal.idRelacion = 04personal.idPersonal
         LEFT JOIN 01informacionpersonal AS info_sesion
-            ON info_sesion.idRelacion = "' . $_SESSION['idem'] . '"
+            ON info_sesion.idRelacion = "' . $idSesion . '"
         WHERE ( (' . $sWhere22 . ')
             AND (02SUBETUFACTURA.ID_RELACIONADO IS NULL OR TRIM(02SUBETUFACTURA.ID_RELACIONADO) = "")
             AND (
                     -- 1) Responsable del evento
-                    04personal.idPersonal = "' . $_SESSION['idem'] . '"
+                   04personal.idPersonal = "' . $idSesion . '"
 
                  -- 2) NOMBRE_DEL_AYUDO guarda el nombre completo
-                 OR TRIM(02SUBETUFACTURA.NOMBRE_DEL_AYUDO) = TRIM("' . $_SESSION['NOMBREUSUARIO'] . '")
+    OR LOWER(TRIM(02SUBETUFACTURA.NOMBRE_DEL_AYUDO)) = "' . $nombreUsuarioSesion . '"
 
                  -- 3) NOMBRE_DEL_AYUDO guarda el ID de la persona
-                 OR TRIM(02SUBETUFACTURA.NOMBRE_DEL_AYUDO) = TRIM("' . $_SESSION['idem'] . '")
+                 OR TRIM(02SUBETUFACTURA.NOMBRE_DEL_AYUDO) = "' . $idSesion . '"
 
                  -- 4) NOMBRE_DEL_EJECUTIVO coincide con el nombre completo del usuario
-                 OR TRIM(02SUBETUFACTURA.NOMBRE_DEL_EJECUTIVO) = TRIM(
-                        CONCAT(info_sesion.NOMBRE_1, " ", info_sesion.APELLIDO_PATERNO, " ", info_sesion.APELLIDO_MATERNO)
-                    )
+                 OR LOWER(TRIM(02SUBETUFACTURA.NOMBRE_DEL_EJECUTIVO)) = ' . $nombreCompletoSesionSql . '
 
                  -- 5) NOMBRE_DEL_AYUDO coincide con el nombre completo del usuario
-                 OR TRIM(02SUBETUFACTURA.NOMBRE_DEL_AYUDO) = TRIM(
-                        CONCAT(info_sesion.NOMBRE_1, " ", info_sesion.APELLIDO_PATERNO, " ", info_sesion.APELLIDO_MATERNO)
-                    )
+                 OR LOWER(TRIM(02SUBETUFACTURA.NOMBRE_DEL_AYUDO)) = ' . $nombreCompletoSesionSql . '
                 )
             AND 04personal.autoriza = "si"
         )';
@@ -413,29 +413,25 @@ if ($sWhere2 != "") {
             ON 04personal.idRelacion = 04altaeventos.id
         INNER JOIN 01informacionpersonal
             ON 01informacionpersonal.idRelacion = 04personal.idPersonal
-        LEFT JOIN 01informacionpersonal AS info_sesion
-            ON info_sesion.idRelacion = "' . $_SESSION['idem'] . '"
+      LEFT JOIN 01informacionpersonal AS info_sesion
+            ON info_sesion.idRelacion = "' . $idSesion . '"
         WHERE
             (02SUBETUFACTURA.ID_RELACIONADO IS NULL OR TRIM(02SUBETUFACTURA.ID_RELACIONADO) = "")
             AND (
                     -- 1) Responsable del evento
-                    04personal.idPersonal = "' . $_SESSION['idem'] . '"
+               04personal.idPersonal = "' . $idSesion . '"
 
                  -- 2) NOMBRE_DEL_AYUDO guarda el nombre completo
-                 OR TRIM(02SUBETUFACTURA.NOMBRE_DEL_AYUDO) = TRIM("' . $_SESSION['NOMBREUSUARIO'] . '")
+      OR LOWER(TRIM(02SUBETUFACTURA.NOMBRE_DEL_AYUDO)) = "' . $nombreUsuarioSesion . '"
 
                  -- 3) NOMBRE_DEL_AYUDO guarda el ID de la persona
-                 OR TRIM(02SUBETUFACTURA.NOMBRE_DEL_AYUDO) = TRIM("' . $_SESSION['idem'] . '")
+                 OR TRIM(02SUBETUFACTURA.NOMBRE_DEL_AYUDO) = "' . $idSesion . '"
 
                  -- 4) NOMBRE_DEL_EJECUTIVO coincide con el nombre completo del usuario
-                 OR TRIM(02SUBETUFACTURA.NOMBRE_DEL_EJECUTIVO) = TRIM(
-                        CONCAT(info_sesion.NOMBRE_1, " ", info_sesion.APELLIDO_PATERNO, " ", info_sesion.APELLIDO_MATERNO)
-                    )
+                 OR LOWER(TRIM(02SUBETUFACTURA.NOMBRE_DEL_EJECUTIVO)) = ' . $nombreCompletoSesionSql . '
 
                  -- 5) NOMBRE_DEL_AYUDO coincide con el nombre completo del usuario
-                 OR TRIM(02SUBETUFACTURA.NOMBRE_DEL_AYUDO) = TRIM(
-                        CONCAT(info_sesion.NOMBRE_1, " ", info_sesion.APELLIDO_PATERNO, " ", info_sesion.APELLIDO_MATERNO)
-                    )
+                 OR LOWER(TRIM(02SUBETUFACTURA.NOMBRE_DEL_AYUDO)) = ' . $nombreCompletoSesionSql . '
                 )
             AND 04personal.autoriza = "si"
     ';
