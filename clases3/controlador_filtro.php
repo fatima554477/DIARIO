@@ -1576,10 +1576,13 @@ $colspan += 1; ?>/>
         value="<?php echo $row["02SUBETUFACTURAid"]; ?>"
         onclick="STATUS_VENTAS(<?php echo $row["02SUBETUFACTURAid"]; ?>)"
        <?php
-            $atributosVentas = [];
-            if ($row["STATUS_VENTAS"] == 'si') {
-                $atributosVentas[] = 'checked';
-            }
+$atributosVentas = [];
+
+// 1) Bloqueo total si ya está en "si"
+if ($row["STATUS_VENTAS"] === 'si') {
+    $atributosVentas[] = 'checked';
+    $atributosVentas[] = 'disabled';
+} else {
 
              $numeroEventoRegistro = strtoupper(trim((string) $numeroEventoMostrar));
             $tienePermisoVenta = $numeroEventoRegistro !== '' && isset($eventosAutorizadosVentas[$numeroEventoRegistro]);
@@ -1587,6 +1590,7 @@ $colspan += 1; ?>/>
             if (!$tienePermisoVenta) {
                 $atributosVentas[] = 'disabled';
             }
+			}
 
             echo implode(' ', $atributosVentas);
         ?>
