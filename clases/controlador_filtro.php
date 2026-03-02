@@ -57,6 +57,7 @@ if($action == "ajaxCOM"){
 	$MONTO_DE_COMISION = isset($_POST["MONTO_DE_COMISION"]) ? $_POST["MONTO_DE_COMISION"] : ""; 
 	$POLIZA_NUMERO = isset($_POST["POLIZA_NUMERO"]) ? $_POST["POLIZA_NUMERO"] : ""; 
 	$NOMBRE_DEL_EJECUTIVO = isset($_POST["NOMBRE_DEL_EJECUTIVO"]) ? $_POST["NOMBRE_DEL_EJECUTIVO"] : ""; 
+	$EJECUTIVOTARJETA = isset($_POST["EJECUTIVOTARJETA"]) ? $_POST["EJECUTIVOTARJETA"] : ""; 
 	$NOMBRE_DEL_AYUDO = isset($_POST["NOMBRE_DEL_AYUDO"]) ? $_POST["NOMBRE_DEL_AYUDO"] : ""; 
 	$OBSERVACIONES_1 = isset($_POST["OBSERVACIONES_1"]) ? $_POST["OBSERVACIONES_1"] : ""; 
 	$FECHA_DE_LLENADO = isset($_POST["FECHA_DE_LLENADO"]) ? $_POST["FECHA_DE_LLENADO"] : ""; 
@@ -138,6 +139,7 @@ if($action == "ajaxCOM"){
 		"POLIZA_NUMERO" => $POLIZA_NUMERO,
 		"NOMBRE_DEL_EJECUTIVO" => $NOMBRE_DEL_EJECUTIVO,
 		"NOMBRE_DEL_AYUDO" => $NOMBRE_DEL_AYUDO,
+		"EJECUTIVOTARJETA" => $EJECUTIVOTARJETA,
 		"OBSERVACIONES_1" => $OBSERVACIONES_1,
 		"FECHA_DE_LLENADO" => $FECHA_DE_LLENADO,
 		"hiddenpagoproveedores" => $hiddenpagoproveedores,
@@ -235,6 +237,9 @@ if($action == "ajaxCOM"){
 
 <th style="background:#c9e8e8">AUDITORÍA</th>
 <th style="background:#c9e8e8">CONTABILIDAD</th>
+<?php if ($database->variablespermisos('', 'rechazo_pagoCOM2', 'ver') == 'si') { ?>
+<th style="background:#c9e8e8">RECHAZADO</th>
+<?php } ?>
 
 
 
@@ -304,11 +309,12 @@ if($database->plantilla_filtro($nombreTabla,"descuentos",$altaeventos,$DEPARTAME
 <?php 
 if($database->plantilla_filtro($nombreTabla,"MONTO_DEPOSITAR",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">TOTAL</th>
 <?php } ?>
-
+<?php if($database->variablespermisos('','COMCHECKDIARIO','ver')=='si'){ ?>
 <?php 
 if($database->plantilla_filtro($nombreTabla,"MATCH",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">MATCH CON <br>ESTADO DE CUENTA</th>
 <th style="background:#c9e8e8;text-align:center">STATUS DE<br>
 COMPROBACIÓN</th>
+<?php } ?>
 <?php } ?>
 <?php 
 if($database->plantilla_filtro($nombreTabla,"TIPO_DE_MONEDA",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">TIPO DE MONEDA O DIVISA</th>
@@ -528,6 +534,9 @@ if($database->plantilla_filtro($nombreTabla,"TOTAL_IMPUESTOS_RETENIDOS",$altaeve
 <td style="background:#c9e8e8"></td>
 <td style="background:#c9e8e8"></td>
 <td style="background:#c9e8e8"></td>
+<?php if ($database->variablespermisos('', 'rechazo_pagoCOM2', 'ver') == 'si') { ?>
+<td style="background:#c9e8e8"></td>
+<?php } ?>
 
 
 <?php  
@@ -616,11 +625,12 @@ echo $descuentos; ?>"></td>
 if($database->plantilla_filtro($nombreTabla,"MONTO_DEPOSITAR",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8"><input type="text" class="form-control" id="MONTO_DEPOSITAR_1" value="<?php 
 echo $MONTO_DEPOSITAR; ?>"></td>
 <?php } ?>
-
+<?php if($database->variablespermisos('','COMCHECKDIARIO','ver')=='si'){ ?>
 <?php  
 if($database->plantilla_filtro($nombreTabla,"MATCH",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8"><input type="text" class="form-control" id="MATCH_1" value="<?php 
 echo $MATCH; ?>"></td>
 <td style="background:#c9e8e8"></td>
+<?php } ?>
 <?php } ?>
 
 
@@ -1182,6 +1192,102 @@ $colspan += 1; ?>/>
         ?>
     />
     <?php $colspan += 1; ?>
+	
+	<?php if ($database->variablespermisos('', 'rechazo_pagoCOM2', 'ver') == 'si') { ?>
+
+<td style="text-align:center; background:
+
+    <?php $statusRechazado = isset($row["STATUS_RECHAZADO"]) ? $row["STATUS_RECHAZADO"] : 'no'; echo ($statusRechazado == 'si') ? '#ceffcc' : '#e9d8ee'; ?>;"
+
+    id="color_RECHAZADO<?php echo $row["07COMPROBACIONid"]; ?>">
+
+
+
+    <?php
+
+         $motivoRechazo = $database->obtener_motivo_rechazo($row["07COMPROBACIONid"]);
+        $statusVentasAutorizado = isset($row["STATUS_VENTAS"]) && $row["STATUS_VENTAS"] == 'si';
+        $mostrarAgregarRechazo = ($statusRechazado == 'si' && $motivoRechazo == '');
+        $mostrarVerRechazo = ($statusRechazado == 'si' && $motivoRechazo != '');
+
+      
+        $permisoguardarRechazo = $database->variablespermisos('', 'rechazo_pagoCOM2', 'guardar') == 'si';
+        $permisomodificarRechazo = $database->variablespermisos('', 'rechazo_pagoCOM2', 'modificar') == 'si';
+
+    ?>
+
+    <input type="hidden" id="motivo_rechazo_<?php echo $row["07COMPROBACIONid"]; ?>" value="<?php echo htmlspecialchars($motivoRechazo, ENT_QUOTES, 'UTF-8'); ?>" />
+
+
+
+    <input type="checkbox"
+
+        style="width:30px; cursor:pointer;"
+
+        class="form-check-input"
+
+        id="STATUS_RECHAZADO<?php echo $row["07COMPROBACIONid"]; ?>"
+
+        name="STATUS_RECHAZADO<?php echo $row["07COMPROBACIONid"]; ?>"
+
+        value="<?php echo $row["07COMPROBACIONid"]; ?>"
+
+        <?php
+
+       if ($statusRechazado == 'si') {
+            if($permisomodificarRechazo){
+                  echo 'checked onclick="STATUS_RECHAZADO('.$row["07COMPROBACIONid"].')" title="Pago rechazado"';
+            } else {
+                echo 'checked disabled style="cursor:not-allowed;" title="Pago rechazado"';
+            }
+        } elseif ($statusVentasAutorizado) {
+            echo 'disabled style="cursor:not-allowed;" title="No se puede rechazar: autorizado por ventas"';
+        } else {
+            if($permisoguardarRechazo || $permisomodificarRechazo){
+               echo 'onclick="STATUS_RECHAZADO('.$row["07COMPROBACIONid"].')"';
+            } else {
+                echo 'disabled style="cursor:not-allowed;" title="Sin permiso para modificar"';
+            }
+        }
+
+        ?>
+
+    />
+
+
+
+        <?php if($permisoguardarRechazo || $permisomodificarRechazo){ ?>
+
+   <button type="button" title="agregar!"
+
+            id="agregar_rechazo_<?php echo $row['07COMPROBACIONid']; ?>"
+
+            data-rechazo-id="<?php echo $row['07COMPROBACIONid']; ?>"
+
+                style="border:none;background:transparent;cursor:pointer;color:#007bff;font-size:14px;<?php echo $mostrarAgregarRechazo ? '' : 'display:none;'; ?>"
+
+            onclick="abrirFormularioRechazo(<?php echo $row['07COMPROBACIONid']; ?>)">agregar <br>motivo</button>
+
+    
+
+<?php } ?>
+
+
+    <button type="button" title="Ver motivo"
+      id="ver_rechazo_<?php echo $row['07COMPROBACIONid']; ?>"
+
+        data-rechazo-id="<?php echo $row['07COMPROBACIONid']; ?>"
+
+       style="border:none;background:transparent;cursor:pointer;color:#28a745;font-size:16px;<?php echo $mostrarVerRechazo ? '' : 'display:none;'; ?>"
+
+        onclick="verMotivoRechazo(<?php echo $row['07COMPROBACIONid']; ?>)">ver</button>
+
+
+    <?php $colspan += 1; ?>
+
+</td>
+
+<?php } ?>
 
 </td>
 
@@ -1294,7 +1400,7 @@ echo  number_format($row['MONTO_DEPOSITAR'],2,'.',',');
 
 
 
-
+<?php if($database->variablespermisos('','COMCHECKDIARIO','ver')=='si'){ ?>
 <?php  if($database->plantilla_filtro($nombreTabla,"MATCH",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"  class="dropdown">
 <input style="text-align:center" class="btn btn-success dropdown-toggle" value="MATCH" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                   <ul class="dropdown-menu">
@@ -1317,7 +1423,8 @@ echo  number_format($row['MONTO_DEPOSITAR'],2,'.',',');
 			<li style="background-color:#ccd9f3"><a class="dropdown-item" href="MATCHESTADO.php" target="_blank">LINK A MATCH CON ESTADO DE CUENTA </a>
 			</li>  
 
-                         </td>
+                         </td><?php } ?>
+					
 
 
 <td><input type="checkbox" style="width:30%;color:red" class="form-check-input" <?php echo $database->validaexistematch2COMPROBACIONtodos($row["07COMPROBACIONid"],'TARJETABBVA'); ?> disabled />
@@ -1769,7 +1876,7 @@ $textoBoton = ($UUID != '') ? 'MODIFICAR' : 'SUBIR FACTURA';
 <td>
 
 <?php if($database->variablespermisos('','COMGASTOSDIARIO','borrar')=='si'){ ?>
-<input type="button" name="view2" value="BORRAR" id="<?php echo $row["07COMPROBACIONid"]; ?>" class="btn btn-info btn-xs view_dataSBborrar" /><?php } ?>
+<input type="button" name="view2" value="BORRAR" id="<?php echo $row["07COMPROBACIONid"]; ?>" class="btn btn-info btn-xs view_dataSBborrarCOM" /><?php } ?>
 </td>			
 		</tr>
 		
