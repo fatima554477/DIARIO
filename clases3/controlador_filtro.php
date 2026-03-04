@@ -312,7 +312,9 @@ $campos="*";
 <th style="background:#c9e8e8">DIRECCIÓN </th><!-antes finanzas y tesoreria->
 <th style="background:#c9e8e8">FINANZAS Y <br>TESORERÍA <br>(PAGADO)</th><!-antes pagado->
 <th style="background:#c9e8e8">AUDITORÍA</th>
-
+<?php if ($database->variablespermisos('', 'rechazo_pagodiario', 'ver') == 'si') { ?>
+<th style="background:#c9e8e8">RECHAZADO</th>
+<?php } ?>
 
 <?php 
 if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_FACTURA_XML",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">FACTURA XML</th>
@@ -694,7 +696,9 @@ if($database->plantilla_filtro($nombreTabla,"FOTO_ESTADO_PROVEE",$altaeventos,$D
 <td style="background:#c9e8e8"></td>
 <td style="background:#c9e8e8"></td>
 <td style="background:#c9e8e8"></td>
-
+<?php if ($database->variablespermisos('', 'rechazo_pagodiario', 'ver') == 'si') { ?>
+<td style="background:#c9e8e8"></td>
+<?php } ?>
 
 
 <?php  
@@ -1583,17 +1587,17 @@ if ($row["STATUS_VENTAS"] === 'si') {
     $atributosVentas[] = 'checked';
     $atributosVentas[] = 'disabled';
 } else {
+    // 2) Si NO está en "si", aquí decides si se puede marcar o no (permiso)
+    $numeroEventoRegistro = isset($row["NUMERO_EVENTO"]) ? strtoupper(trim((string)$row["NUMERO_EVENTO"])) : '';
+    $tienePermisoVenta = $numeroEventoRegistro !== '' && isset($eventosAutorizadosVentas[$numeroEventoRegistro]);
 
-             $numeroEventoRegistro = strtoupper(trim((string) $numeroEventoMostrar));
-            $tienePermisoVenta = $numeroEventoRegistro !== '' && isset($eventosAutorizadosVentas[$numeroEventoRegistro]);
+    if (!$tienePermisoVenta) {
+        $atributosVentas[] = 'disabled';
+    }
+}
 
-            if (!$tienePermisoVenta) {
-                $atributosVentas[] = 'disabled';
-            }
-			}
-
-            echo implode(' ', $atributosVentas);
-        ?>
+echo implode(' ', $atributosVentas);
+?>
     />
     <?php $colspan += 1; ?>
 
@@ -1611,7 +1615,7 @@ if ($row["STATUS_VENTAS"] === 'si') {
         echo '#e9d8ee'; // lila claro para pendiente
     }
     ?>" 
-    id="color_pagado1a<?php echo $row["02SUBETUFACTURAid"]; ?>">
+    id="color_pagado1a2<?php echo $row["02SUBETUFACTURAid"]; ?>">
 
     <input type="checkbox" style="width:30PX;" class="form-check-input"
            id="STATUS_AUDITORIA1<?php echo $row["02SUBETUFACTURAid"]; ?>"
@@ -1677,13 +1681,13 @@ if ($row["STATUS_VENTAS"] === 'si') {
 
 <td style="text-align:center; background:
     <?php echo ($row["STATUS_DE_PAGO"] == 'PAGADO') ? '#ceffcc' : '#e9d8ee'; ?>;" 
-    id="color_pagado1a<?php echo $row["02SUBETUFACTURAid"]; ?>">
+    id="color_pagado1a2<?php echo $row["02SUBETUFACTURAid"]; ?>">
 
     <input type="checkbox"
         style="width:30px;"
         class="form-check-input"
-        id="pasarpagado1a<?php echo $row["02SUBETUFACTURAid"]; ?>"
-        name="pasarpagado1a<?php echo $row["02SUBETUFACTURAid"]; ?>"
+        id="pasarpagado1a2<?php echo $row["02SUBETUFACTURAid"]; ?>"
+        name="pasarpagado1a2<?php echo $row["02SUBETUFACTURAid"]; ?>"
         value="<?php echo $row["02SUBETUFACTURAid"]; ?>"
         <?php
             $permisoVerFINANZAS       = $database->variablespermisos('', 'FINANZAS', 'ver') == 'si';
@@ -1691,11 +1695,11 @@ if ($row["STATUS_VENTAS"] === 'si') {
 
             if ($row["STATUS_DE_PAGO"] == 'PAGADO') {
                 echo $permisoModificarFINANZAS
-                    ? 'checked onclick="pasarpagado2('.$row["02SUBETUFACTURAid"].')"'
+                    ? 'checked onclick="pasarpagado('.$row["02SUBETUFACTURAid"].')"'
                     : 'checked disabled style="cursor:not-allowed;" title="Ya está pagado"';
             } else {
                 if($permisoVerFINANZAS){
-                    echo 'onclick="pasarpagado2('.$row["02SUBETUFACTURAid"].')"';
+                    echo 'onclick="pasarpagado('.$row["02SUBETUFACTURAid"].')"';
                 } else {
                     // Sin permiso → bloqueado y con aviso
                     echo 'disabled style="cursor:not-allowed;" title="Sin permiso para modificar"';
@@ -1743,6 +1747,101 @@ if ($row["STATUS_VENTAS"] === 'si') {
 
 </td>
 
+<?php if ($database->variablespermisos('', 'rechazo_pagodiario', 'ver') == 'si') { ?>
+
+<td style="text-align:center; background:
+
+    <?php $statusRechazado = isset($row["STATUS_RECHAZADO"]) ? $row["STATUS_RECHAZADO"] : 'no'; echo ($statusRechazado == 'si') ? '#ceffcc' : '#e9d8ee'; ?>;"
+
+    id="color_RECHAZADO<?php echo $row["02SUBETUFACTURAid"]; ?>">
+
+
+
+    <?php
+
+         $motivoRechazo = $database->obtener_motivo_rechazo($row["02SUBETUFACTURAid"]);
+        $statusVentasAutorizado = isset($row["STATUS_VENTAS"]) && $row["STATUS_VENTAS"] == 'si';
+        $mostrarAgregarRechazo = ($statusRechazado == 'si' && $motivoRechazo == '');
+        $mostrarVerRechazo = ($statusRechazado == 'si' && $motivoRechazo != '');
+
+      
+        $permisoguardarRechazo = $database->variablespermisos('', 'rechazo_pagodiario', 'guardar') == 'si';
+        $permisomodificarRechazo = $database->variablespermisos('', 'rechazo_pagodiario', 'modificar') == 'si';
+
+    ?>
+
+    <input type="hidden" id="motivo_rechazo_<?php echo $row["02SUBETUFACTURAid"]; ?>" value="<?php echo htmlspecialchars($motivoRechazo, ENT_QUOTES, 'UTF-8'); ?>" />
+
+
+
+    <input type="checkbox"
+
+        style="width:30px; cursor:pointer;"
+
+        class="form-check-input"
+
+        id="STATUS_RECHAZADO<?php echo $row["02SUBETUFACTURAid"]; ?>"
+
+        name="STATUS_RECHAZADO<?php echo $row["02SUBETUFACTURAid"]; ?>"
+
+        value="<?php echo $row["02SUBETUFACTURAid"]; ?>"
+
+        <?php
+
+   if ($statusVentasAutorizado) {
+            echo 'disabled style="cursor:not-allowed;" title="No se puede rechazar: autorizado por ventas"';
+        } elseif ($statusRechazado == 'si') {
+            if($permisomodificarRechazo){
+                echo 'checked onclick="STATUS_RECHAZADO('.$row["02SUBETUFACTURAid"].')" title="Pago rechazado"';
+            } else {
+                echo 'checked disabled style="cursor:not-allowed;" title="Pago rechazado"';
+            }
+        } else {
+            if($permisoguardarRechazo || $permisomodificarRechazo){
+                echo 'onclick="STATUS_RECHAZADO('.$row["02SUBETUFACTURAid"].')"';
+            } else {
+                echo 'disabled style="cursor:not-allowed;" title="Sin permiso para modificar"';
+            }
+        }
+
+        ?>
+
+    />
+
+
+
+        <?php if($permisoguardarRechazo || $permisomodificarRechazo){ ?>
+
+   <button type="button" title="agregar!"
+
+            id="agregar_rechazo_<?php echo $row['02SUBETUFACTURAid']; ?>"
+
+            data-rechazo-id="<?php echo $row['02SUBETUFACTURAid']; ?>"
+
+                style="border:none;background:transparent;cursor:pointer;color:#007bff;font-size:14px;<?php echo $mostrarAgregarRechazo ? '' : 'display:none;'; ?>"
+
+            onclick="abrirFormularioRechazo(<?php echo $row['02SUBETUFACTURAid']; ?>)">agregar <br>motivo</button>
+
+    
+
+<?php } ?>
+
+
+    <button type="button" title="Ver motivo"
+      id="ver_rechazo_<?php echo $row['02SUBETUFACTURAid']; ?>"
+
+        data-rechazo-id="<?php echo $row['02SUBETUFACTURAid']; ?>"
+
+       style="border:none;background:transparent;cursor:pointer;color:#28a745;font-size:16px;<?php echo $mostrarVerRechazo ? '' : 'display:none;'; ?>"
+
+        onclick="verMotivoRechazo(<?php echo $row['02SUBETUFACTURAid']; ?>)">ver</button>
+
+
+    <?php $colspan += 1; ?>
+
+</td>
+
+<?php } ?>
 
 
 

@@ -16,31 +16,24 @@ include_once (__ROOT1__."/../pagoproveedores/class.epcinnPP.php");
 
 class orders extends accesoclase {
         public $mysqli;
-        public $counter;//Propiedad para almacenar el numero de registro devueltos por la consulta
+        public $counter;
 
         function __construct(){
                 $this->mysqli = $this->db();
     }
 
-        /**
-         * Obtiene la configuración de visibilidad de un campo usando caché en memoria
-         * para evitar consultas repetidas a la base de datos durante la misma petición.
-         */
         public function plantilla_filtro($nombreTabla, $campo, $altaeventos, $DEPARTAMENTO) {
                 static $cache = [];
                 $cacheKey = $nombreTabla.'|'.$campo.'|'.$altaeventos.'|'.$DEPARTAMENTO;
-
                 if (array_key_exists($cacheKey, $cache)) {
                         return $cache[$cacheKey];
                 }
-
                 $parentClass = get_parent_class($this);
                 if ($parentClass && is_callable([$parentClass, 'plantilla_filtro'])) {
                         $cache[$cacheKey] = parent::plantilla_filtro($nombreTabla, $campo, $altaeventos, $DEPARTAMENTO);
                 } else {
                         $cache[$cacheKey] = '';
                 }
-
                 return $cache[$cacheKey];
         }
 
@@ -52,26 +45,21 @@ class orders extends accesoclase {
     public function datos_bancarios_xml($rfc, $idRelacion = null, $nombreComercial = null){
                 $conn = $this->db();
                 $filtros = [];
-
                 if($this->isValidRfc($rfc)){
                         $valueRfc = mysqli_real_escape_string($conn, strtoupper($rfc));
                         $filtros[] = "P_RFC_MTDP = '".$valueRfc."'";
                 }
-
                 $nombreComercial = trim((string)$nombreComercial);
                 if($nombreComercial !== ''){
                         $valueNombre = mysqli_real_escape_string($conn, $nombreComercial);
                         $filtros[] = "02direccionproveedor1.P_NOMBRE_COMERCIAL_EMPRESA = '".$valueNombre."'";
                 }
-
                 if(is_numeric($idRelacion)){
                         $filtros[] = "02usuarios.id = '".intval($idRelacion)."'";
                 }
-
                 if(empty($filtros)){
                         return null;
                 }
-
                 $variable = "SELECT 02DATOSBANCARIOS1.idRelacion AS idRelacion FROM 02usuarios "
                         ."LEFT JOIN 02direccionproveedor1 ON 02usuarios.id = 02direccionproveedor1.idRelacion "
                         ."LEFT JOIN 02DATOSBANCARIOS1 ON 02DATOSBANCARIOS1.idRelacion = 02usuarios.id "
@@ -85,17 +73,14 @@ class orders extends accesoclase {
         public function datos_bancarios_todo($idRelacion, $nombreComercial = null){
                 $conn = $this->db();
                 $filtros = [];
-
                 if(is_numeric($idRelacion)){
                         $filtros[] = "02DATOSBANCARIOS1.idRelacion = '".intval($idRelacion)."'";
                 }
-
                 $nombreComercial = trim((string)$nombreComercial);
                 if($nombreComercial !== ''){
                         $valueNombre = mysqli_real_escape_string($conn, $nombreComercial);
                         $filtros[] = "02direccionproveedor1.P_NOMBRE_COMERCIAL_EMPRESA = '".$valueNombre."'";
                 }
-
                 if(empty($filtros)){
                         return [];
                 }
@@ -108,7 +93,6 @@ class orders extends accesoclase {
                 $row2 = mysqli_fetch_array($query2, MYSQLI_ASSOC);
                 return $row2 ? $row2 : [];
         }
-   
 
 	public function DOCUMENTOSFISCALES_PAGOA($idRelacion, $documento , $documento2=FALSE){
 		$conn = $this->db();
@@ -134,10 +118,7 @@ class orders extends accesoclase {
 		$count=$query->num_rows;
 		return $count;
 	}
-	
-	
-	
-	//STATUS_EVENTO,NOMBRE_CORTO_EVENTO,NOMBRE_EVENTO
+
 	public function getData($tables3,$campos,$search){
 		$offset=$search['offset'];
 		$per_page=$search['per_page'];
@@ -151,7 +132,14 @@ class orders extends accesoclase {
 		$sWhereCC =" ON 02SUBETUFACTURA.id = 02XML.`ultimo_id` ";
 		$sWhere2="";$sWhere3="";
 
-		
+		/* ================================================================
+		   PERMISO PARAVER
+		   Con permiso  → ve todos sus registros (por evento + por nombre)
+		   Sin permiso  → solo ve los registros donde él es NOMBRE_DEL_AYUDO
+		   El valor se pasa desde el controlador en $search['PARAVER']
+		   ================================================================ */
+		$adminadmintienePermisoParaVer = (isset($search['PARAVER']) && $search['PARAVER'] === 'si');
+
 		if($search['NUMERO_CONSECUTIVO_PROVEE']!=""){
 			$sWhere2.="  $tables.NUMERO_CONSECUTIVO_PROVEE LIKE '%".$search['NUMERO_CONSECUTIVO_PROVEE']."%' and ";}
 		if($search['NOMBRE_COMERCIAL']!=""){
@@ -172,50 +160,35 @@ class orders extends accesoclase {
 			$sWhere2.="  $tables.CONCEPTO_PROVEE LIKE '%".$search['CONCEPTO_PROVEE']."%' and ";}
 		if($search['MONTO_TOTAL_COTIZACION_ADEUDO']!=""){
 			$sWhere2.="  $tables.MONTO_TOTAL_COTIZACION_ADEUDO LIKE '%".$search['MONTO_TOTAL_COTIZACION_ADEUDO']."%' and ";}
-
 		if($search['MONTO_FACTURA']!=""){
 			$MONTO_FACTURA = str_replace(',','',str_replace('$','',$search['MONTO_FACTURA']));
 			$sWhere2.="  $tables.MONTO_FACTURA LIKE '%".$MONTO_FACTURA."%' and ";}
-
 		if($search['MONTO_PROPINA']!=""){
 			$MONTO_PROPINA = str_replace(',','',str_replace('$','',$search['MONTO_PROPINA']));
 			$sWhere2.="  $tables.MONTO_PROPINA LIKE '%".$MONTO_PROPINA ."%' and ";}
-
 		if($search['MONTO_DEPOSITAR']!=""){
 			$MONTO_DEPOSITAR = str_replace(',','',str_replace('$','',$search['MONTO_DEPOSITAR']));
-			$sWhere2.="  $tables.MONTO_DEPOSITAR LIKE '%".$MONTO_DEPOSITAR."%' and ";
-		}
+			$sWhere2.="  $tables.MONTO_DEPOSITAR LIKE '%".$MONTO_DEPOSITAR."%' and ";}
 		if($search['IVA']!=""){
 			$sWhere2.="  $tables.IVA LIKE '%".$search['IVA']."%' and ";}
-
 		if($search['IEPS']!=""){
 			$sWhere2.="  $tables.IEPS LIKE '%".$search['IEPS']."%' and ";}
-
 		if($search['MONTO_DEPOSITADO']!=""){
 			$MONTO_DEPOSITADO = str_replace(',','',str_replace('$','',$search['MONTO_DEPOSITADO']));	
 			$sWhere2.="  $tables.MONTO_DEPOSITADO LIKE '%".$search['MONTO_DEPOSITADO']."%' and ";}
-
 		if($search['TIPO_DE_MONEDA']!=""){
 			$sWhere2.="  $tables.TIPO_DE_MONEDA LIKE '%".$search['TIPO_DE_MONEDA']."%' and ";}
 		if($search['PFORMADE_PAGO']!=""){
 			$sWhere2.="  $tables.PFORMADE_PAGO LIKE '%".$search['PFORMADE_PAGO']."%' and ";}
-
    if(isset($search['FECHA_DE_PAGO_VACIO']) && $search['FECHA_DE_PAGO_VACIO']!==""){
    $sWhere2.=" ($tables.FECHA_DE_PAGO IS NULL OR $tables.FECHA_DE_PAGO = '' OR $tables.FECHA_DE_PAGO = '0000-00-00') and ";
    }elseif($search['FECHA_DE_PAGO']!="" and $search['FECHA_DE_PAGO2a']!=""){
-   //BETWEEN '2022-01-12' AND '2022-01-22' DATE(`ribono_tabla`.fechaamazon) 	
-   $sWhere2.=" $tables.FECHA_DE_PAGO BETWEEN 
-   '".$search['FECHA_DE_PAGO']."' and '".$search['FECHA_DE_PAGO2a']."'  and ";
+   $sWhere2.=" $tables.FECHA_DE_PAGO BETWEEN '".$search['FECHA_DE_PAGO']."' and '".$search['FECHA_DE_PAGO2a']."'  and ";
    }elseif($search['FECHA_DE_PAGO']!=""){
-
    $sWhere2.=" $tables.FECHA_DE_PAGO LIKE '%".$search['FECHA_DE_PAGO']."%' and ";
-
    }elseif($search['FECHA_DE_PAGO2a']!=""){
-
    $sWhere2.=" $tables.FECHA_DE_PAGO LIKE '%".$search['FECHA_DE_PAGO2a']."%' and ";
-
    }
-
 		if($search['FECHA_A_DEPOSITAR']!=""){
 			$sWhere2.="  $tables.FECHA_A_DEPOSITAR LIKE '%".$search['FECHA_A_DEPOSITAR']."%' and ";}
 		if($search['STATUS_DE_PAGO']!=""){
@@ -248,13 +221,12 @@ class orders extends accesoclase {
 			$sWhere2.="  $tables.MONTO_DE_COMISION = '".$search['MONTO_DE_COMISION']."' and ";}
 		if($search['POLIZA_NUMERO']!=""){
 			$sWhere2.="  $tables.POLIZA_NUMERO LIKE '%".$search['POLIZA_NUMERO']."%' and ";}
-	if($search['NOMBRE_DEL_EJECUTIVO']!=""){
+		if($search['NOMBRE_DEL_EJECUTIVO']!=""){
 			$nombreEjecutivo = strtolower(trim($search['NOMBRE_DEL_EJECUTIVO']));
 			$sWhere2.="  LOWER($tables.NOMBRE_DEL_EJECUTIVO) LIKE '%".$nombreEjecutivo."%' and ";}
-			if($search['NOMBRE_DEL_AYUDO']!=""){
+		if($search['NOMBRE_DEL_AYUDO']!=""){
 			$nombreAyudo = strtolower(trim($search['NOMBRE_DEL_AYUDO']));
 			$sWhere2.="  LOWER($tables.NOMBRE_DEL_AYUDO) LIKE '%".$nombreAyudo."%' and ";}
-
 		if($search['OBSERVACIONES_1']!=""){
 			$sWhere2.="  $tables.OBSERVACIONES_1 LIKE '%".$search['OBSERVACIONES_1']."%' and ";}
 		if($search['FECHA_DE_LLENADO']!=""){
@@ -273,7 +245,6 @@ class orders extends accesoclase {
 			$sWhere2.="  $tables.TImpuestosRetenidosISR LIKE '%".$search['TImpuestosRetenidosISR']."%' and ";}
 		if($search['descuentos']!=""){
 			$sWhere2.="  $tables.descuentos LIKE '%".$search['descuentos']."%' and ";}
-
 		/////////////////////////////nuevo//////////////////////////
 		if($search['P_TIPO_DE_MONEDA_1']!=""){
 			$sWhere2.="  $tables4.P_TIPO_DE_MONEDA_1 LIKE '%".$search['P_TIPO_DE_MONEDA_1']."%' and ";}
@@ -291,7 +262,6 @@ class orders extends accesoclase {
 			$sWhere2.="  $tables4.FOTO_ESTADO_PROVEE LIKE '%".$search['FOTO_ESTADO_PROVEE']."%' and ";}
 		if($search['ULTIMA_CARGA_DATOBANCA']!=""){
 			$sWhere2.="  $tables4.ULTIMA_CARGA_DATOBANCA LIKE '%".$search['ULTIMA_CARGA_DATOBANCA']."%' and ";}
-
 		if($search['UUID']!=""){
 			$sWhere2.="  $tables2.UUID = '".$search['UUID']."' and ";}
 		if($search['metodoDePago']!=""){
@@ -369,73 +339,116 @@ class orders extends accesoclase {
 		if($search['propina']!=""){
 			$propina = str_replace(',','',str_replace('$','',$search['propina']));
 			$sWhere2.="  $tables2.propina = '".$propina."' and ";}
-// Recomendado: asegurar sesión
+
 $idem = isset($_SESSION['idem']) ? $_SESSION['idem'] : '';
 $nombreUsuario = isset($_SESSION['NOMBREUSUARIO']) ? $_SESSION['NOMBREUSUARIO'] : '';
+
+		/* ================================================================
+		   CONDICION DE VISIBILIDAD SEGUN PERMISO PARAVER
+		   ----------------------------------------------------------------
+		   CON permiso: ve registros por evento (idPersonal+autoriza)
+		               O donde es NOMBRE_DEL_AYUDO
+		               O donde es NOMBRE_DEL_EJECUTIVO
+		   SIN permiso: SOLO ve registros donde él es NOMBRE_DEL_AYUDO
+		   ================================================================ */
+		if ($admintienePermisoParaVer) {
+
+			// --- VISION COMPLETA ---
+			// Ve TODOS los registros de los eventos donde él tiene autorización,
+			// sin importar quién los subió (no se restringe a su propio nombre).
+			$admincondicionVisibilidad = '
+					02SUBETUFACTURA.NUMERO_EVENTO IN (
+						SELECT ae2.NUMERO_EVENTO
+						FROM 04personal per2
+						INNER JOIN 04altaeventos ae2 ON ae2.id = per2.idRelacion
+						WHERE per2.idPersonal = "' . $idem . '"
+						  AND per2.autoriza = "si"
+						  AND ae2.NUMERO_EVENTO IS NOT NULL
+						  AND ae2.NUMERO_EVENTO <> ""
+					)
+					OR LOWER(TRIM(02SUBETUFACTURA.NOMBRE_DEL_AYUDO)) = (
+						SELECT LOWER(TRIM(CONCAT(p.NOMBRE_1, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO)))
+						FROM 01informacionpersonal p
+						WHERE p.idRelacion = "' . $idem . '"
+					)
+					OR LOWER(TRIM(02SUBETUFACTURA.NOMBRE_DEL_EJECUTIVO)) = (
+						SELECT LOWER(TRIM(CONCAT(p.NOMBRE_1, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO)))
+						FROM 01informacionpersonal p
+						WHERE p.idRelacion = "' . $idem . '"
+					)';
+
+		} else {
+
+			// --- VISION RESTRINGIDA: solo donde él es NOMBRE_DEL_AYUDO ---
+			$admincondicionVisibilidad = '
+					LOWER(TRIM(02SUBETUFACTURA.NOMBRE_DEL_AYUDO)) = (
+						SELECT LOWER(TRIM(CONCAT(p.NOMBRE_1, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO)))
+						FROM 01informacionpersonal p
+						WHERE p.idRelacion = "' . $idem . '"
+					)';
+		}
+
+		// Filtro fijo: solo registros SIN ID_RELACIONADO
+		$adminfiltroSinRelacion = '
+			AND (
+				02SUBETUFACTURA.ID_RELACIONADO IS NULL
+				OR TRIM(02SUBETUFACTURA.ID_RELACIONADO) = \'\'
+			)';
 
 if ($sWhere2 != "") {
 
     $sWhere22 = substr($sWhere2, 0, -4);
 
-   $sWhere3 = ' ' . $sWhereCC . ' 
-        INNER JOIN 04altaeventos 
-            ON 04altaeventos.NUMERO_EVENTO = 02SUBETUFACTURA.NUMERO_EVENTO
-        INNER JOIN 04personal 
-            ON 04personal.idRelacion = 04altaeventos.id
-        WHERE ( (' . $sWhere22 . ') 
-            AND (
-                    -- 1) Responsable del evento con autorización
-                    (04personal.idPersonal = "' . $_SESSION['idem'] . '" 
-                     AND 04personal.autoriza = "si")
-                    
-
-
-
-                    OR 02SUBETUFACTURA.NOMBRE_DEL_AYUDO = (
-                        SELECT TRIM(CONCAT(p.NOMBRE_1, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO))
-                        FROM 01informacionpersonal p
-                        WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
-                       
-                    )
-                    OR 02SUBETUFACTURA.NOMBRE_DEL_EJECUTIVO = (
-                        SELECT TRIM(CONCAT(p.NOMBRE_1, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO))
-                        FROM 01informacionpersonal p
-                        WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
-                      
-                    )
+    if ($admintienePermisoParaVer) {
+        // CON permiso: LEFT JOINs para no perder registros sin evento asignado
+        $sWhere3 = ' ' . $sWhereCC . '
+            LEFT JOIN 04altaeventos
+                ON 04altaeventos.NUMERO_EVENTO = 02SUBETUFACTURA.NUMERO_EVENTO
+            WHERE ( (' . $sWhere22 . ')
+                AND (
+                    ' . $admincondicionVisibilidad . '
                 )
-        )';
+                ' . $adminfiltroSinRelacion . '
+            )';
+    } else {
+        // SIN permiso: INNER JOINs originales
+        $sWhere3 = ' ' . $sWhereCC . '
+            INNER JOIN 04altaeventos
+                ON 04altaeventos.NUMERO_EVENTO = 02SUBETUFACTURA.NUMERO_EVENTO
+            INNER JOIN 04personal
+                ON 04personal.idRelacion = 04altaeventos.id
+            WHERE ( (' . $sWhere22 . ')
+                AND (
+                    ' . $admincondicionVisibilidad . '
+                )
+                ' . $adminfiltroSinRelacion . '
+            )';
+    }
+
 } else {
-    $sWhere3 = ' ' . $sWhereCC . ' 
-        INNER JOIN 04altaeventos 
-            ON 04altaeventos.NUMERO_EVENTO = 02SUBETUFACTURA.NUMERO_EVENTO
-        INNER JOIN 04personal 
-            ON 04personal.idRelacion = 04altaeventos.id
-        WHERE 
-            (
-                -- 1) Responsable del evento con autorización
-                (04personal.idPersonal = "' . $_SESSION['idem'] . '"
-                 AND 04personal.autoriza = "si")
 
-
-
-                OR 02SUBETUFACTURA.NOMBRE_DEL_AYUDO = (
-                    SELECT TRIM(CONCAT(p.NOMBRE_1, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO))
-                    FROM 01informacionpersonal p
-                    WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
-                    
-                )
-                OR 02SUBETUFACTURA.NOMBRE_DEL_EJECUTIVO = (
-                    SELECT TRIM(CONCAT(p.NOMBRE_1, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO))
-                    FROM 01informacionpersonal p
-                    WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
-                  
-                )
+    if ($admintienePermisoParaVer) {
+        // CON permiso: LEFT JOINs para no perder registros sin evento asignado
+        $sWhere3 = ' ' . $sWhereCC . '
+            LEFT JOIN 04altaeventos
+                ON 04altaeventos.NUMERO_EVENTO = 02SUBETUFACTURA.NUMERO_EVENTO
+            WHERE (
+                ' . $admincondicionVisibilidad . '
             )
-    ';
+            ' . $adminfiltroSinRelacion;
+    } else {
+        // SIN permiso: INNER JOINs originales
+        $sWhere3 = ' ' . $sWhereCC . '
+            INNER JOIN 04altaeventos
+                ON 04altaeventos.NUMERO_EVENTO = 02SUBETUFACTURA.NUMERO_EVENTO
+            INNER JOIN 04personal
+                ON 04personal.idRelacion = 04altaeventos.id
+            WHERE (
+                ' . $admincondicionVisibilidad . '
+            )
+            ' . $adminfiltroSinRelacion;
+    }
 }
-
-
 
 
 $campos_eventos = "
@@ -480,92 +493,67 @@ $campos_eventos = "
 			$sWhere3campo = substr($sWhere3campo,0,-2);
 		}
 
-
 		$whereClause = $sWhere3;
 		$orderClause .= " GROUP BY 02SUBETUFACTURA.id ORDER BY " . $sWhere3campo;
 
                 $sql="SELECT $campos , 02SUBETUFACTURA.id as 02SUBETUFACTURAid, RFC_PROVEEDOR as RFC_PROVEEDOR1trim FROM $tables LEFT JOIN $tables2 $sWhere $whereClause $orderClause LIMIT $offset,$per_page";
                 $query=$this->mysqli->query($sql);
 
-                // Consulta de conteo optimizada sin SQL_CALC_FOUND_ROWS
                 $countSql = "SELECT COUNT(*) AS total FROM $tables LEFT JOIN $tables2 $sWhere $whereClause";
                 $totalResult = $this->mysqli->query($countSql);
                 $totalRow = $totalResult ? $totalResult->fetch_assoc() : ['total' => 0];
                 $nums_row = isset($totalRow['total']) ? (int)$totalRow['total'] : 0;
 
-                //Set counter
                 $this->setCounter($nums_row);
                 return $query;
-		
-
 	}
-
 
 
 public function obtener_rfc_a_id($valor, $nombreComercial = null) {
     $conn = $this->db();
-
-    // Escapar el valor por seguridad
     $valor = mysqli_real_escape_string($conn, trim($valor));
     $nombreComercial = trim((string) $nombreComercial);
-
     $condiciones = [
         'dp.P_RFC_MTDP = "'.$valor.'"',
         'dp.P_NOMBRE_FISCAL_RS_EMPRESA LIKE "%'.$valor.'%"',
         'dp.P_NOMBRE_COMERCIAL_EMPRESA LIKE "%'.$valor.'%"',
     ];
-
     foreach ($condiciones as $condicion) {
         $filtros = [$condicion];
-
         if ($nombreComercial !== '') {
             $nombreComercialEscaped = mysqli_real_escape_string($conn, $nombreComercial);
             $filtros[] = 'dp.P_NOMBRE_COMERCIAL_EMPRESA = "'.$nombreComercialEscaped.'"';
         }
-
         $query = 'SELECT dp.idRelacion AS idRelacion FROM 02direccionproveedor1 dp '
             .'INNER JOIN 02usuarios u ON u.id = dp.idRelacion '
             .'WHERE '.implode(' AND ', $filtros).' ORDER BY dp.idRelacion DESC';
-
         $respuesta = mysqli_query($conn, $query);
         $fetch_array = mysqli_fetch_array($respuesta, MYSQLI_ASSOC);
-
         if (!empty($fetch_array['idRelacion'])) { 
             return $fetch_array['idRelacion'];
         }
     }
-
-    // Si no encontró nada, regresar NULL o falso
     return null;
 }
 
      public function iralevento($valor) {
     $conn = $this->db();
-
-    // Escapar el valor por seguridad
     $valor = mysqli_real_escape_string($conn, trim($valor));
-
-    // 1. Buscar por RFC exacto
     $query = 'SELECT id FROM 04altaeventos WHERE NUMERO_EVENTO = "'.$valor.'" LIMIT 1';
     $respuesta = mysqli_query($conn, $query);
     $fetch_array = mysqli_fetch_array($respuesta, MYSQLI_ASSOC);
-
     if (!empty($fetch_array['id'])) {
         return $fetch_array['id'];
     }
 	}
 	
-	
-	
 	public function getTotalAmaunt($rfc,$idrelacioN=false){
-		//PRINT_R($idrelacioN);
 		$query_OR = "";
 		foreach($idrelacioN as $etiqueta => $valor){
 			foreach( $valor AS $etiqueta2 => $valor2){
 				$query_OR .= ' id = '. $valor2.' OR ';
 			}
 		}
-		//ECHO $query_OR;
 		$query_OR2 = substr($query_OR,0,-3);
 		$ROWevento = $this->var_altaeventos();
 		$conn = $this->db();		
@@ -593,19 +581,12 @@ public function obtener_rfc_a_id($valor, $nombreComercial = null) {
 		return $fetch_arrary['BALANCE'];
 	}
 
-	
 	public function TruncateingresarTemproal(){
 		$connn=$this->db();
 		$queryTemporal = 'truncate table 02temporalEstadoCuenta;';
 		mysqli_query($connn,$queryTemporal);	
 	}
 
-
-
-
-
-	
-	
 	public function ingresarTemproal2($RFC_PROVEEDOR,$MONTO_TOTAL_COTIZACION_ADEUDO,$MONTO_DEPOSITADO,$idRelacion,$balance){
 		$connn=$this->db();
 		$queryTemporal = 'insert into 02temporalEstadoCuenta2 (RFC_PROVEEDOR ,MONTO_TOTAL_COTIZACION_ADEUDO, MONTO_DEPOSITADO, idRelacion, BALANCE)values("'.$RFC_PROVEEDOR.'","'.$MONTO_TOTAL_COTIZACION_ADEUDO.'","'.$MONTO_DEPOSITADO.'","'.$idRelacion.'", "'.$balance.'");';
@@ -616,24 +597,13 @@ public function obtener_rfc_a_id($valor, $nombreComercial = null) {
 		$connn=$this->db();
 		$queryTemporal = 'select * from 02temporalEstadoCuenta2 order by RFC_PROVEEDOR, id desc; ';
 		return $query = mysqli_query($connn,$queryTemporal);
-
 	}
 
-	
 	public function TruncateingresarTemproal2(){
 		$connn=$this->db();
 		$queryTemporal = 'truncate table 02temporalEstadoCuenta2;';
 		mysqli_query($connn,$queryTemporal);	
 	}
-
-
-
-
-
-
-
-
-
 
 	public function getTotalAmaunt2($rfc){
 		$conn = $this->db();		
@@ -647,7 +617,6 @@ public function obtener_rfc_a_id($valor, $nombreComercial = null) {
 
 	public function getTotalAmaunt2id($rfc,$idrelacioN,$idactual){
 		$query_OR = "";
-		//EP2
 		foreach($idrelacioN as $etiqueta => $valor){
 			foreach( $valor AS $etiqueta2 => $valor2){
 				if($idactual!=$valor2){
@@ -670,23 +639,13 @@ public function obtener_rfc_a_id($valor, $nombreComercial = null) {
 		return $fetch_arrary2['MONTO_DEPOSITADO1'];
 	}
 	
-	
-	
-	
 	public function diferenciaPorConsecutivo($NUMERO_CONSECUTIVO_PROVEE) {
     $NUMERO_CONSECUTIVO_PROVEE = $this->mysqli->real_escape_string($NUMERO_CONSECUTIVO_PROVEE);
     $NUMERO_CONSECUTIVO_PROVEE = (int)$NUMERO_CONSECUTIVO_PROVEE;
     $con = $this->db();
-
-    // Inicializar variables
     $PorfaltaDeFactura = 0.0;
     $PorfaltaDeFacturaSUBERES = 0.0;
-
     $subTotalSUBETUFACTURA = 0.0;
-
-
-
-    // 1) Con ID_RELACIONADO != '' (relacionadas)
     $VarSUBE = "SELECT subTotal, UUID, MONTO_DEPOSITAR, ID_RELACIONADO, STATUS_CHECKBOX,
                        MONTO_FACTURA, NUMERO_CONSECUTIVO_PROVEE
                 FROM 02SUBETUFACTURA
@@ -696,10 +655,8 @@ public function obtener_rfc_a_id($valor, $nombreComercial = null) {
                       'PAGO A PROVEEDOR CON DOS O MAS FACTURAS','PAGOS CON UNA SOLA FACTURA')
                   AND (02SUBETUFACTURA.ID_RELACIONADO IS NOT NULL
                        AND TRIM(02SUBETUFACTURA.ID_RELACIONADO) <> '')";
-
     $QUERYSUBE = mysqli_query($con, $VarSUBE);
     while ($ROWe = mysqli_fetch_array($QUERYSUBE)) {
-
         if ($ROWe['STATUS_CHECKBOX'] == 'no' && strlen(trim($ROWe['UUID'])) < 1) {
             $PorfaltaDeFactura += (float)$ROWe['MONTO_DEPOSITAR'] * 1.46;
         } else {
@@ -710,12 +667,9 @@ public function obtener_rfc_a_id($valor, $nombreComercial = null) {
             }
         }
     }
-	
-	
 $NUMERO_CONSECUTIVO_PROVEE = $this->mysqli->real_escape_string($NUMERO_CONSECUTIVO_PROVEE);
 $NUMERO_CONSECUTIVO_PROVEE = (int)$NUMERO_CONSECUTIVO_PROVEE;
 $con = $this->db();
-
 $VarSUBERES = "
     SELECT  STATUS_CHECKBOX ,UUID,
         SUM(CASE WHEN ID_RELACIONADO IS NULL OR TRIM(ID_RELACIONADO) = ''
@@ -727,41 +681,24 @@ $VarSUBERES = "
       AND VIATICOSOPRO IN ('VIATICOS','REEMBOLSO',
                            'PAGO A PROVEEDOR CON DOS O MAS FACTURAS',
                            'PAGOS CON UNA SOLA FACTURA')";
-
 $QUERYSUBERES = mysqli_query($con, $VarSUBERES);
-
-// Obtenemos el único registro de la consulta (suma de montos)
 $ROWeR = $QUERYSUBERES ? mysqli_fetch_assoc($QUERYSUBERES)
                        : ['sin_relacion' => 0, 'con_relacion' => 0];
-
-// Evitar undefined index para claves no incluidas en el SELECT
 $ROWeR += ['UUID' => '', 'STATUS_CHECKBOX' => null];
-
-// Inicializar acumuladores para evitar avisos
 $con_relacion = 0.0;
 $sin_relacion = 0.0;
-
-
     $sin_relacion = (float)$ROWeR['sin_relacion'];
-
     $con_relacion = (float)$ROWeR['con_relacion'];
-
-
-
 if (
     strlen(trim($ROWeR['UUID'])) < 1 &&
     isset($ROWeR['STATUS_CHECKBOX']) && $ROWeR['STATUS_CHECKBOX'] === 'no'
 ) {
     $PorfaltaDeFacturaSUBERES = ($sin_relacion - $con_relacion) * 1.46;
 } else {
-    $PorfaltaDeFacturaSUBERES = $sin_relacion - $con_relacion;// o el valor que corresponda
+    $PorfaltaDeFacturaSUBERES = $sin_relacion - $con_relacion;
 }
-
 return (float) $PorfaltaDeFacturaSUBERES2 = (float) $PorfaltaDeFactura + (float) $PorfaltaDeFacturaSUBERES;
-
-}
-	
-	
+	}
 
         function setCounter($counter) {
                 $this->counter = $counter;
@@ -770,39 +707,23 @@ return (float) $PorfaltaDeFacturaSUBERES2 = (float) $PorfaltaDeFactura + (float)
                 return $this->counter;
         }
 
-        /**
-         * Obtiene los números de evento para los que un colaborador puede
-         * autorizar operaciones de ventas.
-         *
-         * La autorización se determina cuando el colaborador tiene
-         * `autorizaAUT = 'si'` en la tabla 04personal y el evento asociado
-         * pertenece a 04altaeventos.
-         *
-         * @param string|int $idPersonal Identificador del colaborador (idem en sesión).
-         * @return string[] Lista de números de evento (normalizados en mayúsculas).
-         */
         public function puedeAutorizarVentas($idPersonal) {
                 if (empty($idPersonal)) {
                         return [];
                 }
-
                 $conn = $this->db();
                 if (!$conn) {
                         return [];
                 }
-
                 $idPersonal = mysqli_real_escape_string($conn, trim((string) $idPersonal));
-
                 $columnasIdentificador = $this->columnasIdentificadorPersonal($conn);
                 if (empty($columnasIdentificador)) {
                         return [];
                 }
-
                 $condicionesIdentificador = [];
                 foreach ($columnasIdentificador as $columna) {
                         $condicionesIdentificador[] = "`p`.`".$columna."` = '".$idPersonal."'";
                 }
-
                 $sql = "
                         SELECT DISTINCT ae.NUMERO_EVENTO
                         FROM 04personal AS p
@@ -811,12 +732,10 @@ return (float) $PorfaltaDeFacturaSUBERES2 = (float) $PorfaltaDeFactura + (float)
                           AND LOWER(p.autorizaAUT) = 'si'
                           AND ae.NUMERO_EVENTO IS NOT NULL
                           AND ae.NUMERO_EVENTO <> ''";
-
                 $resultado = mysqli_query($conn, $sql);
                 if (!$resultado) {
                         return [];
                 }
-
                 $eventosAutorizados = [];
                 while ($row = mysqli_fetch_assoc($resultado)) {
                         $eventoNormalizado = strtoupper(trim((string) $row['NUMERO_EVENTO']));
@@ -825,49 +744,29 @@ return (float) $PorfaltaDeFacturaSUBERES2 = (float) $PorfaltaDeFactura + (float)
                         }
                 }
                 mysqli_free_result($resultado);
-
                 return array_keys($eventosAutorizados);
         }
 
-        /**
-         * Obtiene las columnas disponibles para identificar a un colaborador en 04personal.
-         *
-         * @param mysqli $conn Conexión activa a la base de datos.
-         * @return string[]
-         */
         private function columnasIdentificadorPersonal($conn) {
                 static $columnasCache = null;
-
                 if ($columnasCache !== null) {
                         return $columnasCache;
                 }
-
                 $columnasPosibles = ['idem', 'idPersonal', 'IDEM', 'ID_PERSONAL'];
                 $columnasDisponibles = [];
-
                 foreach ($columnasPosibles as $columna) {
                         if ($this->columnaExisteEnTabla($conn, '04personal', $columna)) {
                                 $columnasDisponibles[] = $columna;
                         }
                 }
-
                 $columnasCache = $columnasDisponibles;
                 return $columnasCache;
         }
 
-        /**
-         * Verifica si una columna existe en una tabla de la base de datos activa.
-         *
-         * @param mysqli $conn Conexión activa a la base de datos.
-         * @param string $tabla Nombre de la tabla.
-         * @param string $columna Nombre de la columna.
-         * @return bool
-         */
         private function columnaExisteEnTabla($conn, $tabla, $columna) {
                 if (!$conn || $tabla === '' || $columna === '') {
                         return false;
                 }
-
                 $tablaLimpia = str_replace('`', '``', $tabla);
                 $columnaLimpia = mysqli_real_escape_string($conn, $columna);
                 $sql = "SHOW COLUMNS FROM `".$tablaLimpia."` LIKE '".$columnaLimpia."'";
@@ -877,7 +776,6 @@ return (float) $PorfaltaDeFacturaSUBERES2 = (float) $PorfaltaDeFactura + (float)
                         mysqli_free_result($resultado);
                         return $existe;
                 }
-
                 return false;
         }
 
