@@ -385,12 +385,12 @@ if ($sWhere2 != "") {
                      AND 04personal.autoriza = "si")
 
                      OR LOWER(TRIM(02SUBETUFACTURA.NOMBRE_DEL_AYUDO)) = (
-                        SELECT LOWER(TRIM(CONCAT(p.NOMBRE_1, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO)))
+                        SELECT LOWER(TRIM(CONCAT(p.NOMBRE_1, " ", p.NOMBRE_2, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO)))
                         FROM 01informacionpersonal p
                         WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
                     )
                     OR LOWER(TRIM(02SUBETUFACTURA.NOMBRE_DEL_EJECUTIVO)) = (
-                        SELECT LOWER(TRIM(CONCAT(p.NOMBRE_1, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO)))
+                        SELECT LOWER(TRIM(CONCAT(p.NOMBRE_1, " ", p.NOMBRE_2, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO)))
                         FROM 01informacionpersonal p
                         WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
                     )
@@ -416,12 +416,12 @@ if ($sWhere2 != "") {
                  AND 04personal.autoriza = "si")
 
                 OR LOWER(TRIM(02SUBETUFACTURA.NOMBRE_DEL_AYUDO)) = (
-                    SELECT LOWER(TRIM(CONCAT(p.NOMBRE_1, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO)))
+                    SELECT LOWER(TRIM(CONCAT(p.NOMBRE_1, " ", p.NOMBRE_2, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO)))
                     FROM 01informacionpersonal p
                     WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
                 )
                 OR LOWER(TRIM(02SUBETUFACTURA.NOMBRE_DEL_EJECUTIVO)) = (
-                    SELECT LOWER(TRIM(CONCAT(p.NOMBRE_1, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO)))
+                    SELECT LOWER(TRIM(CONCAT(p.NOMBRE_1, " ", p.NOMBRE_2, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO)))
                     FROM 01informacionpersonal p
                     WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
                 )
