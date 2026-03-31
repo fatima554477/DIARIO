@@ -1894,8 +1894,11 @@ $totales2 = 'si';
 				$finales+=$inicios -1;
 				echo '<div class="hint-text">Mostrando '.$inicios.' al '.$finales.' de '.$numrows.' registros</div>';
 			        // Actualizar el contador con un SPAN especial para el círculo
+				$resDisp = $database->mysqli->query("SELECT COUNT(id) as total FROM 07COMPROBACION WHERE (STATUS_VENTAS != 'si' OR STATUS_FINANZAS != 'si' OR STATUS_AUDITORIA2 != 'si' OR STATUS_AUDITORIA3 != 'si') AND (STATUS_RECHAZADO IS NULL OR STATUS_RECHAZADO != 'si')");
+				$rowDisp = $resDisp ? $resDisp->fetch_assoc() : ['total' => 0];
+				$numrowsDisponibles = $rowDisp['total'] ?? 0;
 echo '<script>
-    document.getElementById("COM-registros").innerHTML = "<span class=\'circulo-contador\'>' . $numrows . '</span>";
+    document.getElementById("COM-registros").innerHTML = "<span class=\'circulo-contador\'>' . $numrowsDisponibles . '</span>";
 </script>';
 			?>
         </div>
