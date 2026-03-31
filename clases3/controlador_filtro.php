@@ -2829,28 +2829,34 @@ endif;
 // ---- BOTÓN FACTURA o MODIFICAR ----
 if ($VIATICOSOPRO === "PAGO A PROVEEDOR" && $UUID === '') :
     if ($database->variablespermisos('', 'PAGOAPROVEEDIARIOSUBIR', 'ver') === 'si') {
-
-        if ($STATUS_DE_PAGO === 'APROBADO' || $STATUS_DE_PAGO === 'PAGADO') {
-            $textoBoton = 'SUBIR FACTURA';
-        } elseif ($STATUS_DE_PAGO === 'SOLICITADO') {
-            $textoBoton = 'MODIFICAR';
-        } else {
-            $textoBoton = 'SUBIR FACTURA';
+        if ($STATUS_DE_PAGO !== 'PAGADO') {  // ← SOLO SE OCULTA SI ES PAGADO
+            if ($STATUS_DE_PAGO === 'APROBADO') {
+                $textoBoton = 'SUBIR FACTURA';
+            } elseif ($STATUS_DE_PAGO === 'SOLICITADO') {
+                $textoBoton = 'MODIFICAR';
+            } else {
+                $textoBoton = 'SUBIR FACTURA';
+            }
+            ?>
+            <button 
+                type="button" 
+                id="<?php echo $row['02SUBETUFACTURAid']; ?>" 
+                class="btn btn-info btn-xs view_dataSUBIRF boton-centro">
+                <?php echo $textoBoton; ?>
+            </button>
+            <?php
         }
-        ?>
-        <button 
-            type="button" 
-            id="<?php echo $row['02SUBETUFACTURAid']; ?>" 
-            class="btn btn-info btn-xs view_dataSUBIRF boton-centro">
-            <?php echo $textoBoton; ?>
-        </button>
-<?php
     }
 endif;
+
+
 ?>
 
 
 </td>
+
+
+
 <td><?php if($database->variablespermisos('','PAGOAPROVEEDIARIO','borrar')=='si'){ ?>
 
 

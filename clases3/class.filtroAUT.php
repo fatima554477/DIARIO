@@ -365,9 +365,31 @@ class orders extends accesoclase {
 			$propina = str_replace(',','',str_replace('$','',$search['propina']));
 			$sWhere2.="  $tables2.propina = '".$propina."' and ";}
 
-// Recomendado: asegurar sesión
 $idem = isset($_SESSION['idem']) ? $_SESSION['idem'] : '';
 $nombreUsuario = isset($_SESSION['NOMBREUSUARIO']) ? $_SESSION['NOMBREUSUARIO'] : '';
+$puedeVerTodoPagoProveedor = ($this->variablespermisos('', 'PARAVER', 'ver') == 'si');
+
+$filtroNombreAyudo = 'LOWER(TRIM(02SUBETUFACTURA.NOMBRE_DEL_AYUDO)) = (
+                        SELECT LOWER(TRIM(CONCAT(p.NOMBRE_1, " ", p.NOMBRE_2, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO)))
+                        FROM 01informacionpersonal p
+                        WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
+                    )';
+
+if ($puedeVerTodoPagoProveedor) {
+    $filtroAcceso = '
+                    -- 1) Responsable del evento con autorización
+                    (04personal.idPersonal = "' . $_SESSION['idem'] . '" 
+                     AND 04personal.autoriza = "si")
+
+                     OR ' . $filtroNombreAyudo . '
+                    OR LOWER(TRIM(02SUBETUFACTURA.NOMBRE_DEL_EJECUTIVO)) = (
+                        SELECT LOWER(TRIM(CONCAT(p.NOMBRE_1, " ", p.NOMBRE_2, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO)))
+                        FROM 01informacionpersonal p
+                        WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
+                    )';
+} else {
+    $filtroAcceso = $filtroNombreAyudo;
+}
 
 if ($sWhere2 != "") {
 
@@ -380,21 +402,11 @@ if ($sWhere2 != "") {
             ON 04personal.idRelacion = 04altaeventos.id
         WHERE ( (' . $sWhere22 . ') 
             AND (
-                    -- 1) Responsable del evento con autorización
-                    (04personal.idPersonal = "' . $_SESSION['idem'] . '" 
-                     AND 04personal.autoriza = "si")
-
-                     OR LOWER(TRIM(02SUBETUFACTURA.NOMBRE_DEL_AYUDO)) = (
-                        SELECT LOWER(TRIM(CONCAT(p.NOMBRE_1, " ", p.NOMBRE_2, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO)))
-                        FROM 01informacionpersonal p
-                        WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
-                    )
-                    OR LOWER(TRIM(02SUBETUFACTURA.NOMBRE_DEL_EJECUTIVO)) = (
-                        SELECT LOWER(TRIM(CONCAT(p.NOMBRE_1, " ", p.NOMBRE_2, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO)))
-                        FROM 01informacionpersonal p
-                        WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
-                    )
+                   
+                    ' . $filtroAcceso . '
                 )
+                    )
+                
             /* ── FILTRO: solo registros SIN ID_RELACIONADO ── */
             AND (
                 02SUBETUFACTURA.ID_RELACIONADO IS NULL
@@ -410,22 +422,11 @@ if ($sWhere2 != "") {
         INNER JOIN 04personal 
             ON 04personal.idRelacion = 04altaeventos.id
         WHERE 
-            (
-                -- 1) Responsable del evento con autorización
-                (04personal.idPersonal = "' . $_SESSION['idem'] . '"
-                 AND 04personal.autoriza = "si")
-
-                OR LOWER(TRIM(02SUBETUFACTURA.NOMBRE_DEL_AYUDO)) = (
-                    SELECT LOWER(TRIM(CONCAT(p.NOMBRE_1, " ", p.NOMBRE_2, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO)))
-                    FROM 01informacionpersonal p
-                    WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
-                )
-                OR LOWER(TRIM(02SUBETUFACTURA.NOMBRE_DEL_EJECUTIVO)) = (
-                    SELECT LOWER(TRIM(CONCAT(p.NOMBRE_1, " ", p.NOMBRE_2, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO)))
-                    FROM 01informacionpersonal p
-                    WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
-                )
+     (
+                ' . $filtroAcceso . '
             )
+                
+            
             /* ── FILTRO: solo registros SIN ID_RELACIONADO ── */
             AND (
                 02SUBETUFACTURA.ID_RELACIONADO IS NULL
