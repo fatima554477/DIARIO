@@ -56,6 +56,7 @@
 		var result = data.split('^');			
 		$('#pasarpagado').html("<span 'ACTUALIZADO'</span>").fadeIn().delay(500).fadeOut();
 		loadAUT(1);
+		
 
 		
 		if(pasarpagado_text=='si'){
@@ -69,6 +70,22 @@
 	});
 }
 
+function actualizarContadorCOMRegistros2() {
+    var selector2 = [
+        "input[id^='STATUS_VENTAS']:enabled",
+        "input[id^='STATUS_AUDITORIA1']:enabled",
+        "input[id^='STATUS_FINANZAS']:enabled",
+       
+        "input[id^='STATUS_AUDITORIA2']:enabled"
+    ].join(',');
+
+    var $desbloqueados2 = $(selector2);
+    var totalDesbloqueados2 = $desbloqueados2.length;
+    var totalPrendidos2    = $desbloqueados2.filter(':checked').length;
+    var totalPendientes2   = totalDesbloqueados2 - totalPrendidos2;
+
+    $("#contador-registros").html("<span class='circulo-contador'>" + totalPendientes2 + "</span>");
+}
 
 function STATUS_CHECKBOX(CHECKBOX_id, permisoModificar) {
     var checkBox = document.getElementById("STATUS_CHECKBOX" + CHECKBOX_id);
@@ -394,6 +411,7 @@ function showNotify2(msg, ok){
 		$('#pasarpagado').html("<span id='ACTUALIZADO' >"+result[0]+"</span>");
 		
 		loadAUT(1);
+		actualizarContadorCOMRegistros2();
 
 	if(result[1]=='si'){
 	$('#color_AUDITORIA1'+AUDITORIA1_id).css('background-color', '#ceffcc');
@@ -438,6 +456,7 @@ function showNotify2(msg, ok){
 		var result = data.split('^');				
 		$('#pasarpagado').html("Cargando...").fadeIn().delay(500).fadeOut();
 		loadAUT(1);
+		actualizarContadorCOMRegistros2();
 
 		if(result[1]=='si'){
 		$('#color_AUDITORIA2'+AUDITORIA2_id).css('background-color', '#ceffcc');
@@ -670,7 +689,7 @@ function STATUS_FINANZAS(FINANZAS_id){
 		var result = data.split('^');				
 		$('#pasarpagado').html("Cargando...").fadeIn().delay(500).fadeOut();
 		loadAUT(1);
-		
+		actualizarContadorCOMRegistros2();
 		if(result[1]=='si'){
 		$('#color_FINANZAS'+FINANZAS_id).css('background-color', '#ceffcc');
 		}
@@ -702,7 +721,7 @@ function STATUS_FINANZAS(FINANZAS_id){
 	success:function(data){
 		var result = data.split('^');				
 		$('#pasarpagado').html("Cargando...").fadeIn().delay(500).fadeOut();
-		
+		actualizarContadorCOMRegistros2();
 		
 		if(result[1]=='si'){
 		$('#color_VENTAS'+VENTAS_id).css('background-color', '#ceffcc');
@@ -1078,7 +1097,7 @@ var ULTIMA_CARGA_DATOBANCA=$("#ULTIMA_CARGA_DATOBANCA").val();
         this.closest('tr').style.filter = 'brightness(65%) sepia(100%) saturate(200%) hue-rotate(0deg)';
     }
 });
-
+actualizarContadorCOMRegistros2();
 }
 });
 }
