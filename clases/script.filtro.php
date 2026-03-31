@@ -15,23 +15,19 @@
         });
     }
 function actualizarContadorCOMRegistros() {
-
-    var totalDesbloqueados = $([
-
+    var selector = [
         "input[id^='STATUS_VENTAS_COM2']:enabled",
-
         "input[id^='STATUS_FINANZAS_COM2']:enabled",
-
         "input[id^='STATUS_AUDITORIA2_COM2']:enabled",
-
         "input[id^='STATUS_AUDITORIA3_COM2']:enabled"
+    ].join(',');
 
-    ].join(',')).length;
+    var $desbloqueados = $(selector);
+    var totalDesbloqueados = $desbloqueados.length;
+    var totalPrendidos    = $desbloqueados.filter(':checked').length;
+    var totalPendientes   = totalDesbloqueados - totalPrendidos;
 
-
-
-    $("#COM-registros").html("<span class='circulo-contador'>" + totalDesbloqueados + "</span>");
-
+    $("#COM-registros").html("<span class='circulo-contador'>" + totalPendientes + "</span>");
 }
 
     function STATUS_VENTAS_COM2(VENTAS_id){
