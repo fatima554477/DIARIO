@@ -523,7 +523,10 @@ while($rowDOCTOS = mysqli_fetch_array($querycontrasDOCTOS)) {
         onclick="STATUS_VENTAS_COM2(<?php echo $rowID; ?>)"
         <?php
             $atributosVentas = [];
-            if ($row["STATUS_VENTAS"] == 'si') $atributosVentas[] = 'checked';
+            if ($row["STATUS_VENTAS"] == 'si') {
+                $atributosVentas[] = 'checked';
+                $atributosVentas[] = 'disabled'; // 🔒 Si está marcado, se bloquea
+            }
             $numeroEventoRegistro = isset($row["NUMERO_EVENTO"]) ? strtoupper(trim((string) $row["NUMERO_EVENTO"])) : '';
             $tienePermisoVenta = $numeroEventoRegistro !== '' && isset($eventosAutorizadosVentas[$numeroEventoRegistro]);
             if (!$tienePermisoVenta) $atributosVentas[] = 'disabled';

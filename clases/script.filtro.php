@@ -14,6 +14,25 @@
             }
         });
     }
+function actualizarContadorCOMRegistros() {
+
+    var totalDesbloqueados = $([
+
+        "input[id^='STATUS_VENTAS_COM2']:enabled",
+
+        "input[id^='STATUS_FINANZAS_COM2']:enabled",
+
+        "input[id^='STATUS_AUDITORIA2_COM2']:enabled",
+
+        "input[id^='STATUS_AUDITORIA3_COM2']:enabled"
+
+    ].join(',')).length;
+
+
+
+    $("#COM-registros").html("<span class='circulo-contador'>" + totalDesbloqueados + "</span>");
+
+}
 
     function STATUS_VENTAS_COM2(VENTAS_id){
         var checkBox = document.getElementById("STATUS_VENTAS_COM2_"+VENTAS_id);
@@ -25,6 +44,7 @@
             success:function(data){
                 var result = data.split('^');
                 loadCOM(1);
+				actualizarContadorCOMRegistros();
                 if(result[1]=='si'){
                     $('#color_VENTAS_COM2_'+VENTAS_id).css('background-color','#ceffcc');
                     $('#STATUS_RECHAZADO_COM2_'+VENTAS_id)
@@ -55,6 +75,7 @@
             success:function(data){
                 var result = data.split('^');
                 $('#color_FINANZAS_COM2_'+FINANZAS_id).css('background-color', result[1]=='si' ? '#ceffcc' : '#e9d8ee');
+				actualizarContadorCOMRegistros();
             }
         });
     }
@@ -68,8 +89,10 @@
             data:{AUDITORIA2_id:AUDITORIA2_id, AUDITORIA2_text:AUDITORIA2_text},
             success:function(data){
 				loadCOM(1);
+				
                 var result = data.split('^');
                 $('#color_AUDITORIA2_COM2_'+AUDITORIA2_id).css('background-color', result[1]=='si' ? '#ceffcc' : '#e9d8ee');
+				actualizarContadorCOMRegistros();
             }
         });
     }
@@ -83,9 +106,13 @@
             data:{AUDITORIA3_id:AUDITORIA3_id, AUDITORIA3_text:AUDITORIA3_text},
             success:function(data){
                 var result = data.split('^');
+				
 				loadCOM(1);
+				
                 $('#color_AUDITORIA3_COM2_'+AUDITORIA3_id).css('background-color', result[1]=='si' ? '#ceffcc' : '#e9d8ee');
+				actualizarContadorCOMRegistros();
             }
+			
         });
     }
 
@@ -100,6 +127,7 @@
         if(RECHAZADO_text === 'no'){
             $checkBox.data('forzarAgregarMotivo','si');
 			loadCOM(1);
+			
         } else if(RECHAZADO_text === 'si' && $checkBox.data('forzarAgregarMotivo') !== 'si'){
             $checkBox.removeData('forzarAgregarMotivo');
         }
@@ -400,6 +428,8 @@
                         this.closest('tr').style.filter = 'brightness(65%) sepia(100%) saturate(200%) hue-rotate(0deg)';
                     }
                 });
+				          actualizarContadorCOMRegistros();
+
             }
         });
     }
