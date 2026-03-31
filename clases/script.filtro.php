@@ -39,7 +39,7 @@ function actualizarContadorCOMRegistros() {
             data:{VENTAS_id:VENTAS_id, VENTAS_text:VENTAS_text},
             success:function(data){
                 var result = data.split('^');
-                loadCOM(1);
+                loadCOM(currentPageCOM);
 				actualizarContadorCOMRegistros();
                 if(result[1]=='si'){
                     $('#color_VENTAS_COM2_'+VENTAS_id).css('background-color','#ceffcc');
@@ -84,8 +84,8 @@ function actualizarContadorCOMRegistros() {
             method:'POST',
             data:{AUDITORIA2_id:AUDITORIA2_id, AUDITORIA2_text:AUDITORIA2_text},
             success:function(data){
-				loadCOM(1);
-				
+				loadCOM(currentPageCOM);
+
                 var result = data.split('^');
                 $('#color_AUDITORIA2_COM2_'+AUDITORIA2_id).css('background-color', result[1]=='si' ? '#ceffcc' : '#e9d8ee');
 				actualizarContadorCOMRegistros();
@@ -102,9 +102,9 @@ function actualizarContadorCOMRegistros() {
             data:{AUDITORIA3_id:AUDITORIA3_id, AUDITORIA3_text:AUDITORIA3_text},
             success:function(data){
                 var result = data.split('^');
-				
-				loadCOM(1);
-				
+
+				loadCOM(currentPageCOM);
+
                 $('#color_AUDITORIA3_COM2_'+AUDITORIA3_id).css('background-color', result[1]=='si' ? '#ceffcc' : '#e9d8ee');
 				actualizarContadorCOMRegistros();
             }
@@ -122,8 +122,8 @@ function actualizarContadorCOMRegistros() {
 
         if(RECHAZADO_text === 'no'){
             $checkBox.data('forzarAgregarMotivo','si');
-			loadCOM(1);
-			
+			loadCOM(currentPageCOM);
+
         } else if(RECHAZADO_text === 'si' && $checkBox.data('forzarAgregarMotivo') !== 'si'){
             $checkBox.removeData('forzarAgregarMotivo');
         }
@@ -136,7 +136,7 @@ function actualizarContadorCOMRegistros() {
             data:{RECHAZADO_id:RECHAZADO_id, RECHAZADO_text:RECHAZADO_text},
             success:function(data){
                 var result = (data || '').trim().split('^');
-                loadCOM(1);
+                loadCOM(currentPageCOM);
                 if(result[1]=='si' || result[1]=='no'){
                     $checkBox.data('estadoAnterior', result[1]);
                     if(result[1]=='si' && $checkBox.data('forzarAgregarMotivo') !== 'si'){
@@ -328,7 +328,9 @@ function actualizarContadorCOMRegistros() {
         loadCOM(1);
     });
 
+    var currentPageCOM = 1;
     function loadCOM(page){
+        currentPageCOM = page;
         var getVal = function(id){ return $("#"+id).val(); };
         var parametros = {
             "actionCOM"                 : "ajaxCOM",

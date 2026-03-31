@@ -55,7 +55,7 @@
 		success:function(data){
 		var result = data.split('^');			
 		$('#pasarpagado').html("<span 'ACTUALIZADO'</span>").fadeIn().delay(500).fadeOut();
-		loadAUT(1);
+		loadAUT(currentPageAUT);
 		
 
 		
@@ -409,8 +409,8 @@ function showNotify2(msg, ok){
 		success:function(data){
 		var result = data.split('^');				
 		$('#pasarpagado').html("<span id='ACTUALIZADO' >"+result[0]+"</span>");
-		
-		loadAUT(1);
+
+		loadAUT(currentPageAUT);
 		actualizarContadorCOMRegistros2();
 
 	if(result[1]=='si'){
@@ -455,7 +455,7 @@ function showNotify2(msg, ok){
 		success:function(data){
 		var result = data.split('^');				
 		$('#pasarpagado').html("Cargando...").fadeIn().delay(500).fadeOut();
-		loadAUT(1);
+		loadAUT(currentPageAUT);
 		actualizarContadorCOMRegistros2();
 
 		if(result[1]=='si'){
@@ -508,9 +508,9 @@ actualizarBotonesRechazo(RECHAZADO_id, RECHAZADO_text);
 			var result = data.split('^');
 
 			$('#pasarpagado').html("Cargando...").fadeIn().delay(500).fadeOut();
-			loadAUT(1);
+			loadAUT(currentPageAUT);
 
-			
+
             if(result[1]=='si') $('#color_RECHAZADO'+RECHAZADO_id).css('background-color', '#ceffcc');
 
 			if(result[1]=='no') $('#color_RECHAZADO'+RECHAZADO_id).css('background-color', '#e9d8ee');
@@ -688,7 +688,7 @@ function STATUS_FINANZAS(FINANZAS_id){
 		success:function(data){
 		var result = data.split('^');				
 		$('#pasarpagado').html("Cargando...").fadeIn().delay(500).fadeOut();
-		loadAUT(1);
+		loadAUT(currentPageAUT);
 		actualizarContadorCOMRegistros2();
 		if(result[1]=='si'){
 		$('#color_FINANZAS'+FINANZAS_id).css('background-color', '#ceffcc');
@@ -857,7 +857,9 @@ $("#FECHA_A_DEPOSITAR_2").val("");
 
                 loadAUT(1);
         });
+		var currentPageAUT = 1;
 		function loadAUT(page){
+			currentPageAUT = page;
 			var query=$("#NOMBRE_EVENTO").val();
 			var DEPARTAMENTO2=$("#DEPARTAMENTO2WE").val();
 			
