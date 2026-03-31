@@ -352,7 +352,7 @@ $puedeVerPagosCom = ($this->variablespermisos('', 'verPAGOScom', 'ver') == 'si')
 
 $filtroNombreAyudo = '07COMPROBACION.NOMBRE_DEL_AYUDO = (
 
-                        SELECT TRIM(CONCAT(p.NOMBRE_1, " ", p.NOMBRE_2, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO))
+                        SELECT TRIM(CONCAT(p.NOMBRE_1, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO))
 
                         FROM 01informacionpersonal p
 
@@ -433,8 +433,32 @@ if ($sWhere2 != "") {
             ON 04personal.idRelacion = 04altaeventos.id
         WHERE 
             (
-         ' . $filtroAcceso . '
+                -- 1) Responsable del evento con autorización
+                (04personal.idPersonal = "' . $_SESSION['idem'] . '"
+                 AND 04personal.autoriza = "si")
 
+                -- 2) O es EJECUTIVO TARJETA
+                OR 07COMPROBACION.EJECUTIVOTARJETA = "' . $_SESSION['idem'] . '"
+
+                -- 3) O coincide por nombre en EJECUTIVOTARJETA, AYUDO o EJECUTIVO
+                OR 07COMPROBACION.EJECUTIVOTARJETA = (
+                    SELECT TRIM(CONCAT(p.NOMBRE_1, " ", p.NOMBRE_2, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO))
+                    FROM 01informacionpersonal p
+                    WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
+                    LIMIT 1
+                )
+                OR 07COMPROBACION.NOMBRE_DEL_AYUDO = (
+                    SELECT TRIM(CONCAT(p.NOMBRE_1, " ", p.NOMBRE_2, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO))
+                    FROM 01informacionpersonal p
+                    WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
+                    LIMIT 1
+                )
+                OR 07COMPROBACION.NOMBRE_DEL_EJECUTIVO = (
+                    SELECT TRIM(CONCAT(p.NOMBRE_1, " ", p.NOMBRE_2, " ", p.APELLIDO_PATERNO, " ", p.APELLIDO_MATERNO))
+                    FROM 01informacionpersonal p
+                    WHERE p.idRelacion = "' . $_SESSION['idem'] . '"
+                    LIMIT 1
+                )
             )
     ';
 }
