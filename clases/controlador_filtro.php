@@ -471,7 +471,8 @@ foreach ($datos as $key => $row) {
                } else {
                    fila.style.filter = 'none';
                    localStorage.removeItem('checkbox_COM2_' + id);
-               }">
+               }
+               actualizarContadorDesbloqueados_COM2();">
 </td>
 <td <?php echo $fondo_existe_xml; ?>><?php echo $rowID; $colspan += 1; ?></td>
 

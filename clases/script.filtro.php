@@ -304,6 +304,14 @@
         loadCOM(1);
     });
 
+    function actualizarContadorDesbloqueados_COM2(){
+        var total       = $('.checkbox_COM2').length;
+        var marcados    = $('.checkbox_COM2:checked').length;
+        var desbloqueados = total - marcados;
+        document.getElementById('COM-registros').innerHTML =
+            "<span class='circulo-contador'>" + desbloqueados + "</span>";
+    }
+
     function loadCOM(page){
         var getVal = function(id){ return $("#"+id).val(); };
         var parametros = {
@@ -400,6 +408,7 @@
                         this.closest('tr').style.filter = 'brightness(65%) sepia(100%) saturate(200%) hue-rotate(0deg)';
                     }
                 });
+                actualizarContadorDesbloqueados_COM2();
             }
         });
     }
