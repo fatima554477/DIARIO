@@ -25,6 +25,7 @@
             success:function(data){
                 var result = data.split('^');
                 loadCOM(1);
+                actualizarContadorDesbloqueados_COM2();
                 if(result[1]=='si'){
                     $('#color_VENTAS_COM2_'+VENTAS_id).css('background-color','#ceffcc');
                     $('#STATUS_RECHAZADO_COM2_'+VENTAS_id)
@@ -55,6 +56,7 @@
             success:function(data){
                 var result = data.split('^');
                 $('#color_FINANZAS_COM2_'+FINANZAS_id).css('background-color', result[1]=='si' ? '#ceffcc' : '#e9d8ee');
+                actualizarContadorDesbloqueados_COM2();
             }
         });
     }
@@ -68,6 +70,7 @@
             data:{AUDITORIA2_id:AUDITORIA2_id, AUDITORIA2_text:AUDITORIA2_text},
             success:function(data){
 				loadCOM(1);
+                actualizarContadorDesbloqueados_COM2();
                 var result = data.split('^');
                 $('#color_AUDITORIA2_COM2_'+AUDITORIA2_id).css('background-color', result[1]=='si' ? '#ceffcc' : '#e9d8ee');
             }
@@ -84,6 +87,7 @@
             success:function(data){
                 var result = data.split('^');
 				loadCOM(1);
+                actualizarContadorDesbloqueados_COM2();
                 $('#color_AUDITORIA3_COM2_'+AUDITORIA3_id).css('background-color', result[1]=='si' ? '#ceffcc' : '#e9d8ee');
             }
         });
