@@ -33,6 +33,11 @@
 </style>
 <script type="text/javascript">
 
+    var currentAUTPage = 1;
+    function recargarPaginaAUTActual(){
+      loadAUT(currentAUTPage || 1);
+    }
+
 
 
 	function pasarpagado(pasarpagado_id){
@@ -55,7 +60,7 @@
 		success:function(data){
 		var result = data.split('^');			
 		$('#pasarpagado').html("<span 'ACTUALIZADO'</span>").fadeIn().delay(500).fadeOut();
-		loadAUT(1);
+		recargarPaginaAUTActual();
 		
 
 		
@@ -71,18 +76,37 @@
 }
 
 function actualizarContadorCOMRegistros2() {
-    var selector2 = [
-        "input[id^='STATUS_VENTAS']:enabled",
-        "input[id^='STATUS_AUDITORIA1']:enabled",
-        "input[id^='STATUS_FINANZAS']:enabled",
-       
-        "input[id^='STATUS_AUDITORIA2']:enabled"
-    ].join(',');
+   var prefijosValidos = [
 
-    var $desbloqueados2 = $(selector2);
+        'STATUS_VENTAS',
+
+        'STATUS_AUDITORIA1',
+
+        'STATUS_FINANZAS',
+
+        'STATUS_AUDITORIA2'
+
+    ];
+
+
+
+    var $desbloqueados2 = $('input:enabled').filter(function() {
+
+        var id = this.id || '';
+
+        return prefijosValidos.some(function(prefijo) {
+
+            return new RegExp('^' + prefijo + '\\d+$').test(id);
+
+        });
+
+    });
+
     var totalDesbloqueados2 = $desbloqueados2.length;
-    var totalPrendidos2    = $desbloqueados2.filter(':checked').length;
-    var totalPendientes2   = totalDesbloqueados2 - totalPrendidos2;
+    var totalPrendidos2 = $desbloqueados2.filter(':checked').length;
+
+    var totalPendientes2 = totalDesbloqueados2 - totalPrendidos2;
+
 
     $("#contador-registros").html("<span class='circulo-contador'>" + totalPendientes2 + "</span>");
 }
@@ -410,7 +434,7 @@ function showNotify2(msg, ok){
 		var result = data.split('^');				
 		$('#pasarpagado').html("<span id='ACTUALIZADO' >"+result[0]+"</span>");
 		
-		loadAUT(1);
+		recargarPaginaAUTActual();
 		actualizarContadorCOMRegistros2();
 
 	if(result[1]=='si'){
@@ -455,7 +479,7 @@ function showNotify2(msg, ok){
 		success:function(data){
 		var result = data.split('^');				
 		$('#pasarpagado').html("Cargando...").fadeIn().delay(500).fadeOut();
-		loadAUT(1);
+		recargarPaginaAUTActual();
 		actualizarContadorCOMRegistros2();
 
 		if(result[1]=='si'){
@@ -508,7 +532,7 @@ actualizarBotonesRechazo(RECHAZADO_id, RECHAZADO_text);
 			var result = data.split('^');
 
 			$('#pasarpagado').html("Cargando...").fadeIn().delay(500).fadeOut();
-			loadAUT(1);
+			recargarPaginaAUTActual();
 
 			
             if(result[1]=='si') $('#color_RECHAZADO'+RECHAZADO_id).css('background-color', '#ceffcc');
@@ -688,7 +712,7 @@ function STATUS_FINANZAS(FINANZAS_id){
 		success:function(data){
 		var result = data.split('^');				
 		$('#pasarpagado').html("Cargando...").fadeIn().delay(500).fadeOut();
-		loadAUT(1);
+		recargarPaginaAUTActual();
 		actualizarContadorCOMRegistros2();
 		if(result[1]=='si'){
 		$('#color_FINANZAS'+FINANZAS_id).css('background-color', '#ceffcc');
@@ -846,7 +870,7 @@ $("#FECHA_A_DEPOSITAR_2").val("");
 
 
          $(function() {
-                const triggerSearch = () => loadAUT(1);
+                const triggerSearch = () => recargarPaginaAUTActual();
 
                 $('#target30').on('keydown', 'thead input, thead select', function(event) {
                         if (event.key === 'Enter' || event.which === 13) {
@@ -855,9 +879,10 @@ $("#FECHA_A_DEPOSITAR_2").val("");
                         }
                 });
 
-                loadAUT(1);
+                recargarPaginaAUTActual();
         });
-		function loadAUT(page){
+			function loadAUT(page){
+			currentAUTPage = parseInt(page, 10) || 1;
 			var query=$("#NOMBRE_EVENTO").val();
 			var DEPARTAMENTO2=$("#DEPARTAMENTO2WE").val();
 			
