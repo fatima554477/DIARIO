@@ -34,8 +34,22 @@
 <script type="text/javascript">
 
     var currentAUTPage = 1;
+    var lastAUTScrollY = null;
+    var lastAUTTableScrollTop = null;
+
+    function getAUTScrollContainer(){
+        return document.getElementById('aut-scroll-container');
+    }
+
     function recargarPaginaAUTActual(){
-      loadAUT(currentAUTPage || 1);
+        var scrollContainer = getAUTScrollContainer();
+        if(scrollContainer){
+            lastAUTTableScrollTop = scrollContainer.scrollTop;
+        } else {
+            lastAUTTableScrollTop = null;
+        }
+        lastAUTScrollY = window.scrollY || window.pageYOffset || 0;
+        loadAUT(currentAUTPage || 1, { preserveScroll: true });
     }
 
 
@@ -879,12 +893,18 @@ $("#FECHA_A_DEPOSITAR_2").val("");
                         }
                 });
 
-                recargarPaginaAUTActual();
+                loadAUT(1);
+
         });
-			function loadAUT(page){
-			currentAUTPage = parseInt(page, 10) || 1;
+
+	
+
+		function loadAUT(page, options){
+            options = options || {};
+            currentAUTPage = parseInt(page, 10) || 1;
 			var query=$("#NOMBRE_EVENTO").val();
 			var DEPARTAMENTO2=$("#DEPARTAMENTO2WE").val();
+
 			
 			
 			
@@ -1110,11 +1130,9 @@ var ULTIMA_CARGA_DATOBANCA=$("#ULTIMA_CARGA_DATOBANCA").val();
 						 beforeSend: function(objeto){
 				$("#loaderAUT").html("Cargando...").fadeIn().delay(500).fadeOut();
 			  },
-        success: function (data) {
-			
-				
-		
-            $(".datos_ajaxAUT").html(data).fadeIn('slow');
+		success: function(data){
+			$(".datos_ajaxAUT").html(data).fadeIn('slow');
+			$("#loaderAUT").html('<div class="msg-actualizando">✅ ACTUALIZADO</div>');
           $('.checkbox').each(function() {
     const id = $(this).data('id');
     if (localStorage.getItem('checkbox_' + id) === 'checked') {
@@ -1123,10 +1141,20 @@ var ULTIMA_CARGA_DATOBANCA=$("#ULTIMA_CARGA_DATOBANCA").val();
     }
 });
 actualizarContadorCOMRegistros2();
+if(options.preserveScroll && lastAUTScrollY !== null){
+    window.scrollTo({ top: lastAUTScrollY, behavior: 'auto' });
+    lastAUTScrollY = null;
+}
+if(options.preserveScroll && lastAUTTableScrollTop !== null){
+    var newScrollContainer = getAUTScrollContainer();
+    if(newScrollContainer){
+        newScrollContainer.scrollTop = lastAUTTableScrollTop;
+    }
+    lastAUTTableScrollTop = null;
+}
 }
 });
 }
-
 	
 		
 	</script>
