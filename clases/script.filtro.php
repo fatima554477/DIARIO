@@ -1,8 +1,22 @@
 <script type="text/javascript">
 
     var currentCOMPage = 1;
+    var lastCOMScrollY = null;
+    var lastCOMTableScrollTop = null;
+
+    function getCOMScrollContainer(){
+        return document.getElementById('com-scroll-container');
+    }
+
     function recargarPaginaCOMActual(){
-        loadCOM(currentCOMPage || 1);
+        var scrollContainer = getCOMScrollContainer();
+        if(scrollContainer){
+            lastCOMTableScrollTop = scrollContainer.scrollTop;
+        } else {
+            lastCOMTableScrollTop = null;
+        }
+        lastCOMScrollY = window.scrollY || window.pageYOffset || 0;
+        loadCOM(currentCOMPage || 1, { preserveScroll: true });
     }
 
 
@@ -338,7 +352,8 @@ function actualizarContadorCOMRegistros() {
     });
 
 
-    function loadCOM(page){
+   function loadCOM(page, options){
+        options = options || {};
         currentCOMPage = parseInt(page, 10) || 1;
         var getVal = function(id){ return $("#"+id).val(); };
         var parametros = {
@@ -426,9 +441,9 @@ function actualizarContadorCOMRegistros() {
             beforeSend:function(){
                 $("#loaderCOM").html("Cargando...").fadeIn().delay(500).fadeOut();
             },
-            success:function(data){
-                $(".datos_ajaxCOM").html(data).fadeIn('slow');
-                /* Restaurar checkboxes de marcado visual desde localStorage */
+		success: function(data){
+			$(".datos_ajaxCOM").html(data).fadeIn('slow');
+			$("#loaderCOM").html('<div class="msg-actualizando">✅ ACTUALIZADO</div>');
                 $('.checkbox_COM2').each(function(){
                     const id = $(this).data('id');
                     if(localStorage.getItem('checkbox_COM2_'+id) === 'checked'){
@@ -436,7 +451,18 @@ function actualizarContadorCOMRegistros() {
                         this.closest('tr').style.filter = 'brightness(65%) sepia(100%) saturate(200%) hue-rotate(0deg)';
                     }
                 });
-				          actualizarContadorCOMRegistros();
+			          actualizarContadorCOMRegistros();
+                if(options.preserveScroll && lastCOMScrollY !== null){
+                    window.scrollTo({ top: lastCOMScrollY, behavior: 'auto' });
+                    lastCOMScrollY = null;
+                }
+                if(options.preserveScroll && lastCOMTableScrollTop !== null){
+                    var newScrollContainer = getCOMScrollContainer();
+                    if(newScrollContainer){
+                        newScrollContainer.scrollTop = lastCOMTableScrollTop;
+                    }
+                    lastCOMTableScrollTop = null;
+                }
 
             }
         });
