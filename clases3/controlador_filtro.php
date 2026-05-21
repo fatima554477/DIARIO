@@ -1452,16 +1452,12 @@ if($database->plantilla_filtro($nombreTabla,"PENDIENTE_PAGO",$altaeventos,$DEPAR
         </div>
 <div class="clearfix">
     <?php
-        // Conteo global (sin límite de paginación)
-        $countGlobal = $database->getCounterGlobal(); // si tienes ese método
-        // O si no existe ese método, usa directamente:
-        $countGlobal = $numrows; // temporal, reemplaza con el real
-
         $inicios = $offset + 1;
         $finales = min($offset + $per_page, $numrows);
         echo '<div style="clear: both;" class="hint-text">Mostrando '.$inicios.' al '.$finales.' de '.$numrows.' registros</div>';
-       
-        echo '<script>document.getElementById("contador-registros").innerHTML = "<span class=\'circulo-contador\'>'.$numrows.'</span>";</script>';
+        echo $pagination->paginate();
+        // ↓ USA $countAll en lugar de $numrows
+        echo '<script>document.getElementById("contador-registros").innerHTML = "<span class=\'circulo-contador\'>'.$countAll.'</span>";</script>';
     ?>
 </div>
     <?php
