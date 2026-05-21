@@ -143,6 +143,7 @@ class orders extends accesoclase {
 		$per_page=$search['per_page'];
 		$tables = '02SUBETUFACTURA';
 		$tables2 = '02XML';	
+		$tables3 = '02SUBETUFACTURADOCTOS';	
         $tables4 = '02DATOSBANCARIOS1';			
 		if ($campos === '*') {
 			$campos = '02SUBETUFACTURA.*, 02XML.*';
@@ -210,6 +211,12 @@ class orders extends accesoclase {
    }elseif($search['FECHA_DE_PAGO2a']!=""){
    $sWhere2.=" $tables.FECHA_DE_PAGO LIKE '%".$search['FECHA_DE_PAGO2a']."%' and ";
    }
+if(isset($search['ADJUNTAR_FACTURA_XML_VACIO']) && $search['ADJUNTAR_FACTURA_XML_VACIO'] !== ""){
+    $sWhere2 .= " (
+        $tables2.UUID IS NULL
+        OR TRIM($tables2.UUID) = ''
+    ) and ";
+}
 
 		if($search['FECHA_A_DEPOSITAR']!=""){
 			$sWhere2.="  $tables.FECHA_A_DEPOSITAR LIKE '%".$search['FECHA_A_DEPOSITAR']."%' and ";}
