@@ -788,98 +788,42 @@ function STATUS_FINANZAS(FINANZAS_id){
 
 
 function LIMPIAR(){
-
- $("#UUID").val("");
- $("#metodoDePago").val("");
- $("#totalf").val("");
- $("#serie").val("");
- $("#folio").val("");
- $("#regimenE").val("");
- $("#UsoCFDI").val("");
- $("#TImpuestosTrasladados").val("");
- $("#TImpuestosRetenidos").val("");
- $("#Version").val("");
- $("#tipoDeComprobante").val("");
- $("#condicionesDePago").val("");
- $("#fechaTimbrado").val("");
- $("#nombreR").val("");
- $("#rfcR").val("");
- $("#Moneda").val("");
- $("#TipoCambio").val("");
- $("#ValorUnitarioConcepto").val("");
- $("#DescripcionConcepto").val("");
- $("#ClaveUnidadConcepto").val("");
- $("#ClaveProdServConcepto").val("");
- $("#CantidadConcepto").val("");
- $("#ImporteConcepto").val("");
- $("#UnidadConcepto").val("");
- $("#TUA").val("");
- $("#TuaTotalCargos").val("");
- $("#Descuento").val("");
- $("#ID_RELACIONADO").val("");
-  $("#IVA").val("");
- $("#IEPS").val("");
-$("#NUMERO_CONSECUTIVO_PROVEE_2").val("");
-$("#NOMBRE_COMERCIAL_2").val("");
-$("#RAZON_SOCIAL_2").val("");
-$("#RFC_PROVEEDOR_2").val("");
-$("#NUMERO_EVENTO_2").val("");
-$("#NOMBRE_EVENTO_2").val("");
-$("#MOTIVO_GASTO_2").val("");
-$("#CONCEPTO_PROVEE_2").val("");
-$("#MONTO_TOTAL_COTIZACION_ADEUDO_2").val("");
-$("#MONTO_FACTURA_2").val("");
-$("#MONTO_PROPINA_2").val("");
-$("#MONTO_DEPOSITAR_2").val("");
-$("#TIPO_DE_MONEDA_2").val("");
-$("#PFORMADE_PAGO_2").val("");
-$("#ID_RELACIONADO_2").val("");
-
-$("#FECHA_DE_PAGO").val("");
-$("#FECHA_DE_PAGO2a").val("");
-$("#FECHA_DE_PAGO_VACIO").prop("checked",false);
-
-$("#FECHA_A_DEPOSITAR_2").val("");
- $("#STATUS_DE_PAGO_2").val("");
- $("#ACTIVO_FIJO_2").val("");
- $("#GASTO_FIJO_2").val("");
- $("#PAGAR_CADA_2").val("");
- $("#FECHA_PPAGO_2").val("");
- $("#FECHA_TPROGRAPAGO_2").val("");
- $("#NUMERO_EVENTOFIJO_2").val("");
- $("#CLASI_GENERAL_2").val("");
- $("#SUB_GENERAL_2").val("");
- $("#MONTO_DEPOSITADO_2").val("");
- $("#NUMERO_EVENTO1_2").val("");
- $("#CLASIFICACION_GENERAL_2").val("");
- $("#CLASIFICACION_ESPECIFICA_2").val("");
- $("#PLACAS_VEHICULO_2").val("");
- $("#MONTO_DE_COMISION_2").val("");
- $("#POLIZA_NUMERO_2").val("");
- $("#NOMBRE_DEL_EJECUTIVO_2").val("");
- $("#NOMBRE_DEL_AYUDO_2").val("");
- $("#OBSERVACIONES_2").val("");
- $("#FECHA_DE_LLENADO_2").val("");
- $("#subTotal11").val("");
- $("#TIPO_CAMBIOP").val("");
- $("#TOTAL_ENPESOS").val("");
- $("#IMPUESTO_HOSPEDAJE").val("");
- $("#propina").val("");
-  $("#IVAXML").val("");
- $("#IEPSXML").val("");
- /////////////////tarjeta///////////////////
-  $("#P_TIPO_DE_MONEDA_1").val("");
-  $("#P_INSTITUCION_FINANCIERA_1").val("");
-  $("#P_NUMERO_DE_CUENTA_DB_1").val("");
-  $("#P_NUMERO_CLABE_1").val("");
-  $("#P_NUMERO_IBAN_1").val("");
-  $("#P_NUMERO_CUENTA_SWIFT_1").val("");
-  $("#FOTO_ESTADO_PROVEE").val("");
-  $("#ULTIMA_CARGA_DATOBANCA").val("");
-  $("#TImpuestosRetenidos").val("");
-
- 
- 
+	var filtros = [
+		"NUMERO_CONSECUTIVO_PROVEE_2","NOMBRE_COMERCIAL_2","VIATICOSOPRO_2",
+		"RAZON_SOCIAL_2","RFC_PROVEEDOR_2","NUMERO_EVENTO_2","NOMBRE_EVENTO_2",
+		"MOTIVO_GASTO_2","CONCEPTO_PROVEE_2","MONTO_TOTAL_COTIZACION_ADEUDO_2",
+		"MONTO_FACTURA_2","MONTO_PROPINA_2","MONTO_DEPOSITAR_2","MONTO_DEPOSITADO_2",
+		"TIPO_DE_MONEDA_2","PFORMADE_PAGO_2","FECHA_A_DEPOSITAR_2","STATUS_DE_PAGO_2",
+		"ACTIVO_FIJO_2","GASTO_FIJO_2","PAGAR_CADA_2","FECHA_PPAGO_2",
+		"FECHA_TPROGRAPAGO_2","NUMERO_EVENTOFIJO_2","CLASI_GENERAL_2","SUB_GENERAL_2",
+		"NUMERO_EVENTO1_2","CLASIFICACION_GENERAL_2","CLASIFICACION_ESPECIFICA_2",
+		"PLACAS_VEHICULO_2","MONTO_DE_COMISION_2","POLIZA_NUMERO_2",
+		"NOMBRE_DEL_EJECUTIVO_2","NOMBRE_DEL_AYUDO_2","OBSERVACIONES_1_2",
+		"FECHA_DE_LLENADO_2","FECHA_DE_PAGO","FECHA_DE_PAGO2a",
+		"FECHA_INICIO_EVENTO","FECHA_FINAL_EVENTO",
+		"TIPO_CAMBIOP","TOTAL_ENPESOS","IMPUESTO_HOSPEDAJE","ID_RELACIONADO",
+		"IVA_1","IEPS","TImpuestosRetenidosIVA_3","TImpuestosRetenidosISR_3",
+		"descuentos_3","NUMERO_EVENTO_orden","UUID_1","metodoDePago_1","totalf_1",
+		"serie_1","folio_1","regimenE_1","UsoCFDI_1","TImpuestosTrasladados_1",
+		"TImpuestosRetenidos_1","Version_1","tipoDeComprobante_1","condicionesDePago_1",
+		"fechaTimbrado_1","nombreR_1","rfcR_1","Moneda_1","TipoCambio_1",
+		"ValorUnitarioConcepto_1","DescripcionConcepto_1","ClaveUnidadConcepto_1",
+		"ClaveProdServConcepto_1","CantidadConcepto_1","ImporteConcepto_1",
+		"UnidadConcepto_1","TUA_1","TuaTotalCargos_1","Descuento_1","subTotal11",
+		"propina_1","IVAXML_1","IEPSXML_1","P_TIPO_DE_MONEDA_1",
+		"P_INSTITUCION_FINANCIERA_1","P_NUMERO_DE_CUENTA_DB_1","P_NUMERO_CLABE_1",
+		"P_NUMERO_IBAN_1","P_NUMERO_CUENTA_SWIFT_2","FOTO_ESTADO_PROVEE",
+		"ULTIMA_CARGA_DATOBANCA","RAZON_SOCIAL_orden","RFC_PROVEEDOR_orden",
+		"MONTO_FACTURA_orden","NOMBRE_EVENTO","DEPARTAMENTO2WE",
+		"hiddenpagoproveedores_2"
+	];
+	filtros.forEach(function(id){
+		var el = document.getElementById(id);
+		if(el){ el.value = ''; }
+	});
+	$("#FECHA_DE_PAGO_VACIO").prop("checked", false);
+	$("#ADJUNTAR_FACTURA_XML_VACIO").prop("checked", false);
+	loadAUT(1);
 }
 
 
@@ -928,7 +872,7 @@ var PFORMADE_PAGO=$("#PFORMADE_PAGO_2").val();
 var FECHA_DE_PAGO=$("#FECHA_DE_PAGO").val();
 var FECHA_DE_PAGO2a=$("#FECHA_DE_PAGO2a").val();
 var FECHA_DE_PAGO_VACIO=$("#FECHA_DE_PAGO_VACIO").is(":checked") ? '1' : '';
-var ADJUNTAR_FACTURA_XML_VACIO=$("#ADJUNTAR_FACTURA_XML_VACIO").is(":checked") ? '1' : '';
+var ADJUNTAR_FACTURA_XML_VACIO=$("#ADJUNTAR_FACTURA_XML_VACIO").is(":checked") ? 'si' : '';
 
 var FECHA_A_DEPOSITAR=$("#FECHA_A_DEPOSITAR_2").val();
 var STATUS_DE_PAGO=$("#STATUS_DE_PAGO_2").val();

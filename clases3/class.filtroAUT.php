@@ -139,11 +139,11 @@ class orders extends accesoclase {
 	
 	//STATUS_EVENTO,NOMBRE_CORTO_EVENTO,NOMBRE_EVENTO
 	public function getData($tables3,$campos,$search){
+		
 		$offset=$search['offset'];
 		$per_page=$search['per_page'];
 		$tables = '02SUBETUFACTURA';
 		$tables2 = '02XML';	
-		$tables3 = '02SUBETUFACTURADOCTOS';	
         $tables4 = '02DATOSBANCARIOS1';			
 		if ($campos === '*') {
 			$campos = '02SUBETUFACTURA.*, 02XML.*';
@@ -211,15 +211,18 @@ class orders extends accesoclase {
    }elseif($search['FECHA_DE_PAGO2a']!=""){
    $sWhere2.=" $tables.FECHA_DE_PAGO LIKE '%".$search['FECHA_DE_PAGO2a']."%' and ";
    }
-if(isset($search['ADJUNTAR_FACTURA_XML_VACIO']) && $search['ADJUNTAR_FACTURA_XML_VACIO'] !== ""){
+		if(isset($search['ADJUNTAR_FACTURA_XML_VACIO']) 
+   && $search['ADJUNTAR_FACTURA_XML_VACIO'] == "si"){
+
     $sWhere2 .= " (
-        $tables2.UUID IS NULL
-        OR TRIM($tables2.UUID) = ''
+        02XML.UUID IS NULL
+        OR TRIM(02XML.UUID) = ''
     ) and ";
 }
 
 		if($search['FECHA_A_DEPOSITAR']!=""){
 			$sWhere2.="  $tables.FECHA_A_DEPOSITAR LIKE '%".$search['FECHA_A_DEPOSITAR']."%' and ";}
+			
 		if($search['STATUS_DE_PAGO']!=""){
 			$sWhere2.="  $tables.STATUS_DE_PAGO LIKE '%".$search['STATUS_DE_PAGO']."%' and ";}
 		if($search['ACTIVO_FIJO']!=""){
@@ -403,10 +406,10 @@ if ($sWhere2 != "") {
     $sWhere22 = substr($sWhere2, 0, -4);
 
    $sWhere3 = ' ' . $sWhereCC . ' 
-        INNER JOIN 04altaeventos 
-            ON 04altaeventos.NUMERO_EVENTO = 02SUBETUFACTURA.NUMERO_EVENTO
-        INNER JOIN 04personal 
-            ON 04personal.idRelacion = 04altaeventos.id
+LEFT JOIN 04altaeventos 
+    ON 04altaeventos.NUMERO_EVENTO = 02SUBETUFACTURA.NUMERO_EVENTO
+LEFT JOIN 04personal 
+    ON 04personal.idRelacion = 04altaeventos.id
         WHERE ( (' . $sWhere22 . ') 
             AND (
                    
@@ -419,15 +422,15 @@ if ($sWhere2 != "") {
                 02SUBETUFACTURA.ID_RELACIONADO IS NULL
                 OR TRIM(02SUBETUFACTURA.ID_RELACIONADO) = \'\'
             )
-        )';
+        ';
 
 } else {
 
     $sWhere3 = ' ' . $sWhereCC . ' 
-        INNER JOIN 04altaeventos 
-            ON 04altaeventos.NUMERO_EVENTO = 02SUBETUFACTURA.NUMERO_EVENTO
-        INNER JOIN 04personal 
-            ON 04personal.idRelacion = 04altaeventos.id
+LEFT JOIN 04altaeventos 
+    ON 04altaeventos.NUMERO_EVENTO = 02SUBETUFACTURA.NUMERO_EVENTO
+LEFT JOIN 04personal 
+    ON 04personal.idRelacion = 04altaeventos.id
         WHERE 
      (
                 ' . $filtroAcceso . '

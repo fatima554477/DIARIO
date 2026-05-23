@@ -52,7 +52,7 @@ if($action == "ajaxAUT"){
     $FECHA_DE_PAGO2a               = isset($_POST["FECHA_DE_PAGO2a"])               ? trim($_POST["FECHA_DE_PAGO2a"])               : "";
     $FECHA_DE_PAGO_VACIO           = isset($_POST["FECHA_DE_PAGO_VACIO"])           ? trim($_POST["FECHA_DE_PAGO_VACIO"])           : "";
     $FECHA_A_DEPOSITAR             = isset($_POST["FECHA_A_DEPOSITAR"])             ? trim($_POST["FECHA_A_DEPOSITAR"])             : "";
-	    $ADJUNTAR_FACTURA_XML_VACIO    = isset($_POST["ADJUNTAR_FACTURA_XML_VACIO"])    ? trim($_POST["ADJUNTAR_FACTURA_XML_VACIO"])    : "";
+	$ADJUNTAR_FACTURA_XML_VACIO    = isset($_POST["ADJUNTAR_FACTURA_XML_VACIO"])    ? trim($_POST["ADJUNTAR_FACTURA_XML_VACIO"])    : "";
     $STATUS_DE_PAGO                = isset($_POST["STATUS_DE_PAGO"])                ? trim($_POST["STATUS_DE_PAGO"])                : "";
     $ACTIVO_FIJO                   = isset($_POST["ACTIVO_FIJO"])                   ? trim($_POST["ACTIVO_FIJO"])                   : "";
     $GASTO_FIJO                    = isset($_POST["GASTO_FIJO"])                    ? trim($_POST["GASTO_FIJO"])                    : "";
@@ -432,12 +432,13 @@ if($action == "ajaxAUT"){
 <td style="background:#c9e8e8"></td>
 <?php if ($p_rechazo_ver) { ?><td style="background:#c9e8e8"></td><?php } ?>
 
-<?php if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_FACTURA_XML",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8;text-align:center">
-    <div class="form-check d-inline-block">
-        <input class="form-check-input" type="checkbox" value="1" id="ADJUNTAR_FACTURA_XML_VACIO" <?php if($ADJUNTAR_FACTURA_XML_VACIO==='1'){echo 'checked';} ?>>
-        <label class="form-check-label" for="ADJUNTAR_FACTURA_XML_VACIO">VACÍOS</label>
-    </div>
-</td><?php } ?>
+<?php if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_FACTURA_XML_VACIO2",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8;text-align:center">
+		<div class="form-check" style="margin:2; white-space:nowrap;">
+			<input class="form-check-input" type="checkbox" value="si" id="ADJUNTAR_FACTURA_XML_VACIO" <?php if($ADJUNTAR_FACTURA_XML_VACIO==='si'){echo 'checked';} ?>>
+			<label class="form-check-label" for="ADJUNTAR_FACTURA_XML_VACIO">VACÍOS</label>
+		</div>
+	</div></td>
+<?php } ?>
 <?php if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_FACTURA_PDF",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8;text-align:center"><input type="text" class="form-control" id="ADJUNTAR_FACTURA_PDF" value="<?php echo $ADJUNTAR_FACTURA_PDF; ?>"></td><?php } ?>
 <?php if($database->plantilla_filtro($nombreTabla,"NUMERO_CONSECUTIVO_PROVEE",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8"><input type="text" class="form-control" id="NUMERO_CONSECUTIVO_PROVEE_2" value="<?php echo $NUMERO_CONSECUTIVO_PROVEE; ?>"></td><?php } ?>
 <?php if($database->plantilla_filtro($nombreTabla,"VIATICOSOPRO",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
