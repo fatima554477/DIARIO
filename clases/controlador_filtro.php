@@ -57,7 +57,7 @@ if($action == "ajaxCOM"){
 	$CONCEPTO_PROVEE           = isset($_POST["CONCEPTO_PROVEE"])           ? $_POST["CONCEPTO_PROVEE"]           : ""; 
 	$MONTO_TOTAL_COTIZACION_ADEUDO = isset($_POST["MONTO_TOTAL_COTIZACION_ADEUDO"]) ? $_POST["MONTO_TOTAL_COTIZACION_ADEUDO"] : ""; 
 	$MONTO_FACTURA             = isset($_POST["MONTO_FACTURA"])             ? $_POST["MONTO_FACTURA"]             : ""; 
-	$ADJUNTAR_FACTURA_XML_VACIO2    = isset($_POST["ADJUNTAR_FACTURA_XML_VACIO2"])    ? trim($_POST["ADJUNTAR_FACTURA_XML_VACIO2"])    : "";
+	$ADJUNTAR_FACTURA_XML_VACIO2L    = isset($_POST["ADJUNTAR_FACTURA_XML_VACIO2L"])    ? trim($_POST["ADJUNTAR_FACTURA_XML_VACIO2L"])    : "";
 	$MONTO_PROPINA             = isset($_POST["MONTO_PROPINA"])             ? $_POST["MONTO_PROPINA"]             : ""; 
 	$MONTO_DEPOSITAR           = isset($_POST["MONTO_DEPOSITAR"])           ? $_POST["MONTO_DEPOSITAR"]           : ""; 
 	$TIPO_DE_MONEDA            = isset($_POST["TIPO_DE_MONEDA"])            ? $_POST["TIPO_DE_MONEDA"]            : ""; 
@@ -148,7 +148,7 @@ if($action == "ajaxCOM"){
 		"PAGAR_CADA"                => $PAGAR_CADA,
 		"FECHA_PPAGO"               => $FECHA_PPAGO,
 		"FECHA_TPROGRAPAGO"         => $FECHA_TPROGRAPAGO,
-		"ADJUNTAR_FACTURA_XML_VACIO2"    => $ADJUNTAR_FACTURA_XML_VACIO2,
+		"ADJUNTAR_FACTURA_XML_VACIO2L"    => $ADJUNTAR_FACTURA_XML_VACIO2L,
 		"NUMERO_EVENTOFIJO"         => $NUMERO_EVENTOFIJO,
 		"CLASI_GENERAL"             => $CLASI_GENERAL,
 		"SUB_GENERAL"               => $SUB_GENERAL,
@@ -333,13 +333,14 @@ $countAll = (int)$database->getCounter();
 <td style="background:#c9e8e8"></td>
 <?php if ($p_rechazo_ver) { ?><td style="background:#c9e8e8"></td><?php } ?>
 <?php if($database->plantilla_filtro($nombreTabla,"FECHA_DE_LLENADO",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8"><input type="text" class="form-control" id="FECHA_DE_LLENADO_1" value="<?php echo $FECHA_DE_LLENADO; ?>"></td><?php } ?>
-<?php if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_FACTURA_XML",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8;text-align:center">
+<?php if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_FACTURA_XML_VACIO2L",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8;text-align:center">
 		<div class="form-check" style="margin:2; white-space:nowrap;">
-			<input class="form-check-input" type="checkbox" value="si" 
-    id="ADJUNTAR_FACTURA_XML_VACIO2" 
-    <?php if($ADJUNTAR_FACTURA_XML_VACIO2==='si'){echo 'checked';} ?>
+	<input class="form-check-input" type="checkbox" value="si" 
+    id="ADJUNTAR_FACTURA_XML_VACIO2L" 
+    name="ADJUNTAR_FACTURA_XML_VACIO2L"
+    <?php if($ADJUNTAR_FACTURA_XML_VACIO2L==='si'){echo 'checked';} ?>
     onchange="recargarPaginaCOMActual()">
-			<label class="form-check-label" for="ADJUNTAR_FACTURA_XML_VACIO2">VACÍOS</label>
+			<label class="form-check-label" for="ADJUNTAR_FACTURA_XML_VACIO2L">VACÍOS</label>
 		</div>
 	</div></td>
 <?php } ?>

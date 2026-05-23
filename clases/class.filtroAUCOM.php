@@ -147,7 +147,8 @@ define("__ROOT1__", dirname(dirname(__FILE__)));
 		$tables3 = '07COMPROBACIONDOCT';		
 		//$sWhereCC ="  02XML.`idRelacion` = 07COMPROBACION.id AND ";
 		$sWhereCC ="";
-		$sWhere2="";$sWhere3="";
+		$sWhere2="";$sWhere3="";$filtroVaciosXml="";
+
 		
 		
 		if($search['NUMERO_CONSECUTIVO_PROVEE']!=""){
@@ -244,16 +245,16 @@ $sWhere2.="  $tables.TImpuestosRetenidosISR LIKE '%".$search['TImpuestosRetenido
 
 
 // CÁMBIALO POR ESTO:
-if(isset($search['ADJUNTAR_FACTURA_XML_VACIO2']) 
-   && $search['ADJUNTAR_FACTURA_XML_VACIO2'] == "si"){
+if(isset($search['ADJUNTAR_FACTURA_XML_VACIO2L']) 
+   && $search['ADJUNTAR_FACTURA_XML_VACIO2L'] == "si"){
 
-    $sWhere3 .= " NOT EXISTS (
+    $filtroVaciosXml .= " NOT EXISTS (
         SELECT 1
         FROM 07COMPROBACIONDOCT
         WHERE 07COMPROBACIONDOCT.idRelacion = 07COMPROBACION.id
         AND 07COMPROBACIONDOCT.ADJUNTAR_FACTURA_XML IS NOT NULL 
         AND TRIM(07COMPROBACIONDOCT.ADJUNTAR_FACTURA_XML) != ''
-    ) AND ";
+    ) ";
 }
 
 
@@ -431,13 +432,14 @@ if ($sWhere2 != "") {
 
             ON 04personal.idRelacion = 04altaeventos.id
 
-        WHERE ( (' . $sWhere22 . ') 
+      WHERE ( (' . $sWhere22 . ') 
 
             AND (
 
                     ' . $filtroAcceso . '
 
                 )
+            ' . ($filtroVaciosXml !== '' ? 'AND ' . $filtroVaciosXml : '') . '
         )';
 } else {
     $sWhere3 = ' ' . $sWhereCC . ' 
@@ -474,6 +476,7 @@ if ($sWhere2 != "") {
                     LIMIT 1
                 )
             )
+            ' . ($filtroVaciosXml !== '' ? 'AND ' . $filtroVaciosXml : '') . '
     ';
 }
 

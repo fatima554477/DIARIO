@@ -371,17 +371,20 @@ function actualizarContadorCOMRegistros() {
 		if(el){ el.value = ''; }
 	});
 	
-	$("#ADJUNTAR_FACTURA_XML_VACIO2").prop("checked", false);
+	$("#ADJUNTAR_FACTURA_XML_VACIO2L").prop("checked", false);
 	loadCOM(1);
 	}
 
     /* ---- Inicialización y carga del filtro COM2 ---- */
-    $(function(){
+  $(function(){
         $('#target3').on('keydown', 'thead input, thead select', function(event){
             if(event.key === 'Enter' || event.which === 13){
                 event.preventDefault();
                 recargarPaginaCOMActual();
             }
+        });
+        $('#target3').on('change', '#ADJUNTAR_FACTURA_XML_VACIO2L', function(){
+            recargarPaginaCOMActual();
         });
         loadCOM(1);
 
@@ -426,7 +429,7 @@ function actualizarContadorCOMRegistros() {
             'MONTO_DE_COMISION'         : getVal("MONTO_DE_COMISION_1"),
             'POLIZA_NUMERO'             : getVal("POLIZA_NUMERO_1"),
             'NOMBRE_DEL_EJECUTIVO'      : getVal("NOMBRE_DEL_EJECUTIVO_1"),
-			'ADJUNTAR_FACTURA_XML_VACIO2': $("#ADJUNTAR_FACTURA_XML_VACIO2").is(":checked") ? 'si' : '',
+			'ADJUNTAR_FACTURA_XML_VACIO2L': $("#ADJUNTAR_FACTURA_XML_VACIO2L").is(":checked") ? 'si' : '',
 'NOMBRE_DEL_AYUDO'          : getVal("NOMBRE_DEL_AYUDO_1"),
             'NOMBRE_DEL_AYUDO'          : getVal("NOMBRE_DEL_AYUDO_1"),
             'EJECUTIVOTARJETA'          : getVal("EJECUTIVOTARJETA_1"),
