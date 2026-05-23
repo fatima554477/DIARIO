@@ -1,4 +1,5 @@
 <?php
+
 /**
  	--------------------------
 	Autor: Sandor Matamoros
@@ -143,8 +144,9 @@ define("__ROOT1__", dirname(dirname(__FILE__)));
 		
 		$tables = '07COMPROBACION';
 		$tables2 = '07XML';		
+		$tables3 = '07COMPROBACIONDOCT';		
 		//$sWhereCC ="  02XML.`idRelacion` = 07COMPROBACION.id AND ";
-		$sWhereCC =" ON 07COMPROBACION.id = 07XML.`ultimo_id` ";
+		$sWhereCC ="";
 		$sWhere2="";$sWhere3="";
 		
 		
@@ -239,8 +241,21 @@ $sWhere2.="  $tables.TImpuestosRetenidosIVA LIKE '%".$search['TImpuestosRetenido
 if($search['TImpuestosRetenidosISR']!=""){
 $sWhere2.="  $tables.TImpuestosRetenidosISR LIKE '%".$search['TImpuestosRetenidosISR']."%' AND ";}
 
-if($search['descuentos']!=""){
-$sWhere2.="  $tables.descuentos LIKE '%".$search['descuentos']."%' AND ";}
+
+
+// CÁMBIALO POR ESTO:
+if(isset($search['ADJUNTAR_FACTURA_XML_VACIO2']) 
+   && $search['ADJUNTAR_FACTURA_XML_VACIO2'] == "si"){
+
+    $sWhere3 .= " NOT EXISTS (
+        SELECT 1
+        FROM 07COMPROBACIONDOCT
+        WHERE 07COMPROBACIONDOCT.idRelacion = 07COMPROBACION.id
+        AND 07COMPROBACIONDOCT.ADJUNTAR_FACTURA_XML IS NOT NULL 
+        AND TRIM(07COMPROBACIONDOCT.ADJUNTAR_FACTURA_XML) != ''
+    ) AND ";
+}
+
 
 
 if($search['UUID']!=""){
@@ -401,19 +416,18 @@ if ($puedeVerPagosCom) {
 
 if ($sWhere2 != "") {
 
-
-
+    
     $sWhere22 = substr($sWhere2, 0, -4);
 
 
 
    $sWhere3 = ' ' . $sWhereCC . ' 
 
-        INNER JOIN 04altaeventos 
+        LEFT JOIN 04altaeventos 
 
             ON 04altaeventos.NUMERO_EVENTO = 07COMPROBACION.NUMERO_EVENTO
 
-        INNER JOIN 04personal 
+        LEFT JOIN 04personal 
 
             ON 04personal.idRelacion = 04altaeventos.id
 
@@ -427,9 +441,9 @@ if ($sWhere2 != "") {
         )';
 } else {
     $sWhere3 = ' ' . $sWhereCC . ' 
-        INNER JOIN 04altaeventos 
+        LEFT JOIN 04altaeventos 
             ON 04altaeventos.NUMERO_EVENTO = 07COMPROBACION.NUMERO_EVENTO
-        INNER JOIN 04personal 
+        LEFT JOIN 04personal 
             ON 04personal.idRelacion = 04altaeventos.id
         WHERE 
             (
@@ -464,18 +478,31 @@ if ($sWhere2 != "") {
 }
 
 
-$sWhere3campo = " $tables.id desc ";		
-$sWhere3 .= " GROUP BY 07COMPROBACION.id ORDER BY " . $sWhere3campo;
+$sWhere3campo = " $tables.id desc ";
+$whereClause  = $sWhere3;
+$orderClause  = " GROUP BY 07COMPROBACION.id ORDER BY " . $sWhere3campo;
 
 		//$sWhere3.="  order by $tables.id desc ";
 //echo $sql="SELECT $campos FROM  $tables $sWhere $sWhere3 LIMIT $offset,$per_page";
 
 
-	 $sql="SELECT $campos, 07COMPROBACION.id as 07COMPROBACIONid, 07COMPROBACION.NUMERO_EVENTO as NUMERO_EVENTO, 07COMPROBACION.NOMBRE_COMERCIAL as NOMBRE_COMERCIAL FROM $tables LEFT JOIN $tables2 $sWhere $sWhere3 LIMIT $offset,$per_page";
-		
-		$query=$this->mysqli->query($sql);
-		$sql1="SELECT $campos, 07COMPROBACION.id as 07COMPROBACIONid, 07COMPROBACION.NUMERO_EVENTO as NUMERO_EVENTO, 07COMPROBACION.NOMBRE_COMERCIAL as NOMBRE_COMERCIAL FROM  $tables LEFT JOIN $tables2 $sWhere $sWhere3 ";
-		$nums_row=$this->countAll($sql1);
+$sql = "SELECT $campos, 07COMPROBACION.id as 07COMPROBACIONid, 07COMPROBACION.NUMERO_EVENTO as NUMERO_EVENTO, 07COMPROBACION.NOMBRE_COMERCIAL as NOMBRE_COMERCIAL 
+FROM $tables 
+LEFT JOIN $tables2 ON 07COMPROBACION.id = 07XML.`ultimo_id` 
+$whereClause $orderClause LIMIT $offset,$per_page";
+
+ 
+
+$query = $this->mysqli->query($sql);
+
+$countSql = "SELECT COUNT(DISTINCT 07COMPROBACION.id) AS total 
+FROM $tables 
+LEFT JOIN $tables2 ON 07COMPROBACION.id = 07XML.`ultimo_id` 
+$whereClause";
+
+		$totalResult = $this->mysqli->query($countSql);
+		$totalRow = $totalResult ? $totalResult->fetch_assoc() : ['total' => 0];
+		$nums_row = isset($totalRow['total']) ? (int)$totalRow['total'] : 0;
 		//Set counter
 		$this->setCounter($nums_row);
 		return $query;
