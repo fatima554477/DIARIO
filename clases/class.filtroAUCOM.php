@@ -248,13 +248,8 @@ $sWhere2.="  $tables.TImpuestosRetenidosISR LIKE '%".$search['TImpuestosRetenido
 if(isset($search['ADJUNTAR_FACTURA_XML_VACIO2L']) 
    && $search['ADJUNTAR_FACTURA_XML_VACIO2L'] == "si"){
 
-    $filtroVaciosXml .= " NOT EXISTS (
-        SELECT 1
-        FROM 07COMPROBACIONDOCT
-        WHERE 07COMPROBACIONDOCT.idRelacion = 07COMPROBACION.id
-        AND 07COMPROBACIONDOCT.ADJUNTAR_FACTURA_XML IS NOT NULL 
-        AND TRIM(07COMPROBACIONDOCT.ADJUNTAR_FACTURA_XML) != ''
-    ) ";
+ $filtroVaciosXml .= " (07XML.UUID IS NULL OR TRIM(07XML.UUID) = '') ";
+
 }
 
 
