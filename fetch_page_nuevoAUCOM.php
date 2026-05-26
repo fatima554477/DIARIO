@@ -62,7 +62,7 @@ div.hint-text {
 	<strong>
 		<p class="mb-0 text-uppercase">
 			<img src="includes/contraer31.png" id="mostrar3" onclick="loadCOM(1);" style="cursor:pointer;"/>
-			<img src="includes/contraer41.png" id="ocultar3" style="cursor:pointer;"/>&nbsp;&nbsp;&nbsp;AUTORIZACIONES COMPROBACIÓN DE GASTOS             <span id="COM-registros" class="text-muted small" ></span>
+			<img src="includes/contraer41.png" id="ocultar3" style="cursor:pointer;"/>&nbsp;&nbsp;&nbsp;AUTORIZACIONES Y CONSULTA DE MIS MOVIMIENTOS DE COMPROBACIÓN DE GASTOS             <span id="COM-registros" class="text-muted small" ></span>
 		</p>
 	</strong>
 </div>
@@ -82,8 +82,8 @@ div.hint-text {
 <td width="30%" align="center"> 
     <span>MOSTRAR</span>
     <select class="form-select mb-3" id="per_pageCOM" onchange="loadCOM(1);">
-        <option value="6"  <?php if($_REQUEST['per_pageCOM']=='6')  echo 'selected'; ?>>6</option>
-        <option value="7"  <?php if($_REQUEST['per_pageCOM']=='7')  echo 'selected'; ?>>7</option>
+      
+        <option value="8"  <?php if($_REQUEST['per_pageCOM']=='8')  echo 'selected'; ?>>8</option>
         <option value="10" <?php if($_REQUEST['per_pageCOM']=='10') echo 'selected'; ?>>10</option>
         <option value="15" <?php if($_REQUEST['per_pageCOM']=='15') echo 'selected'; ?>>15</option>
         <option value="20" <?php if($_REQUEST['per_pageCOM']=='20') echo 'selected'; ?>>20</option>
@@ -92,9 +92,11 @@ div.hint-text {
         <option value="20000"<?php if($_REQUEST['per_pageCOM']=='20000')echo 'selected'; ?>>TODOS</option>
     </select>
 </td>
-					<td width="30%" align="center">					
-						<button class="btn btn-sm btn-outline-success px-5" type="button" onclick="loadCOM(1);">BUSCAR</button>
-					</td>
+												<td width="30%" align="center">
+    <button class="btn btn-sm btn-outline-success px-5" type="button" onclick="loadCOM(1);">BUSCAR</button>
+    &nbsp;
+    <button class="btn btn-sm btn-outline-danger px-4" type="button" onclick="LIMPIAR2();">🧹 LIMPIAR FILTRO</button>
+</td>
 <td width="30%" align="center">
     <span>PLANTILLA</span>
     <?php
@@ -139,7 +141,30 @@ div.hint-text {
 		</div>
 	</div>
 </div>
-
+<div class="modal fade" id="modalRechazoPago" tabindex="-1" role="dialog" aria-labelledby="modalRechazoPagoLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#ebf9e9;">
+                <h5 class="modal-title" id="modalRechazoPagoLabel">Motivo del rechazo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="cerrarModalRechazoPago();">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="modal_rechazo_id" value="">
+                <textarea id="modal_rechazo_texto" class="form-control" rows="5" placeholder="Describe el motivo del rechazo"></textarea>
+                <div id="modal_rechazo_mensaje" style="margin-top:10px;font-size:12px;color:#666;"></div>
+            </div>
+            <div class="modal-footer" id="modal_rechazo_footer_editar">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="cerrarModalRechazoPago();">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btn_guardar_rechazo_modal">Guardar</button>
+            </div>
+            <div class="modal-footer" id="modal_rechazo_footer_ver" style="display:none;">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="cerrarModalRechazoPago();">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 <?php
 
 require "clases/script.filtro.php";
