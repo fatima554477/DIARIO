@@ -434,7 +434,8 @@ if($action == "ajaxAUT"){
 
 <?php if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_FACTURA_XML_VACIO2",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8;text-align:center">
 		<div class="form-check" style="margin:2; white-space:nowrap;">
-			<input class="form-check-input" type="checkbox" value="si" id="ADJUNTAR_FACTURA_XML_VACIO" <?php if($ADJUNTAR_FACTURA_XML_VACIO==='si'){echo 'checked';} ?>>
+			<input class="form-check-input" type="checkbox" value="si" id="ADJUNTAR_FACTURA_XML_VACIO" <?php if($ADJUNTAR_FACTURA_XML_VACIO==='si'){echo 'checked';} ?>
+			onchange="recargarPaginaAUTActual()">
 			<label class="form-check-label" for="ADJUNTAR_FACTURA_XML_VACIO">VACÍOS</label>
 		</div>
 	</div></td>

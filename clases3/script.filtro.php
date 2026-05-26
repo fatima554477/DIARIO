@@ -837,7 +837,8 @@ function LIMPIAR(){
                         }
                 });
 
-                loadAUT(1);
+      $("#ADJUNTAR_FACTURA_XML_VACIO").prop("checked", true);
+                recargarPaginaAUTActual();
 
         });
 
