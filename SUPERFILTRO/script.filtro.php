@@ -1,64 +1,73 @@
 <script type="text/javascript">
 
-function LIMPIAR7(){
- $("#idRelacionDiario_1").val("");
- $("#nombreDiario_1").val("");
- $("#departamentoDiario_1").val("");
- $("#OBSERVACIONES_SOLICITUD_1").val("");
- $("#FECHA_SOLICITUD_1").val("");
- $("#grupo_1").val("");
-
+function LIMPIAR12(){
+ $("#FECHA_INCIDENCIAS_1").val("");
+ $("#NUMEROI_1").val("");
+ $("#DOCUMENTO_INCIDENCIAS_1").val("");
+ $("#idAA_1").val("");
+ $("#Departamento_1").val("");
+ $("#TIPO_CAMBIOP").val("");
+ $("#OBSERVACIONES_INCIDENCIAS_1").val("");
+ $("#STATUS_1").val("");
+ $("#RESPUESTA_1").val("");
+ $("#NOMBRE_INCIDENCIAS_1").val("");
  
 		$(function() {
-			loadI1(1);
+			load12(1);
 		});
 }
 
 		$(function() {
-			loadI1(1);
+			load12(1);
 		});
-		function loadI1(page){
+		function load12(page){
 			var query=$("#NOMBRE_EVENTO").val();
 			var DEPARTAMENTO2=$("#DEPARTAMENTO2WE").val();
 			var FECHA_INCIDENCIAS=$("#FECHA_INCIDENCIAS_1").val();
-var idRelacionDiario=$("#idRelacionDiario_1").val();
-var nombreDiario=$("#nombreDiario_1").val();
-var departamentoDiario=$("#departamentoDiario_1").val();
-var OBSERVACIONES_SOLICITUD=$("#OBSERVACIONES_SOLICITUD_1").val();
-var FECHA_SOLICITUD=$("#FECHA_SOLICITUD_1").val();
-var grupo=$("#grupo_1").val();
-
+var NUMEROI=$("#NUMEROI_1").val();
+var DOCUMENTO_INCIDENCIAS=$("#DOCUMENTO_INCIDENCIAS_1").val();
+var id33=$("#idAA_1").val();
+var Departamento=$("#Departamento_1").val();
+var OBSERVACIONES_INCIDENCIAS=$("#OBSERVACIONES_INCIDENCIAS_1").val();
+var STATUS=$("#STATUS_1").val();
+var hINCIDENCIAS=$("#hINCIDENCIAS_1").val();
+var RESPUESTA=$("#RESPUESTA_1").val();
+var NOMBRE_INCIDENCIAS=$("#NOMBRE_INCIDENCIAS_1").val();
 /*termina copiar y pegar*/
 			
-			var per_page=$("#per_pageI").val();
+			var per_page=$("#per_page12").val();
 			var parametros = {
-			"action":"ajax",
+			"action12":"ajax12",
 			"page":page,
 			'query':query,
 			'per_page':per_page,
 
 /*inicia copiar y pegar*/
-'idRelacionDiario':idRelacionDiario,
-'nombreDiario':nombreDiario,
-'departamentoDiario':departamentoDiario,
-'OBSERVACIONES_SOLICITUD':OBSERVACIONES_SOLICITUD,
-'FECHA_SOLICITUD':FECHA_SOLICITUD,
-'grupo':grupo,
+'FECHA_INCIDENCIAS':FECHA_INCIDENCIAS,
+'DOCUMENTO_INCIDENCIAS':DOCUMENTO_INCIDENCIAS,
+'NUMEROI':NUMEROI,
+'id22':id33,
+'Departamento':Departamento,
+'OBSERVACIONES_INCIDENCIAS':OBSERVACIONES_INCIDENCIAS,
+'STATUS':STATUS,
+'hINCIDENCIAS':hINCIDENCIAS,
+'RESPUESTA':RESPUESTA,
+'NOMBRE_INCIDENCIAS':NOMBRE_INCIDENCIAS,
 /*termina copiar y pegar*/
 
 			'DEPARTAMENTO2':DEPARTAMENTO2
 			};
-			$("#loaderI").fadeIn('slow');
+			$("#loader12").fadeIn('slow');
 			$.ajax({
-				url:'DIARIO/SUPERFILTRO/controlador_filtro.php',
+				url:'INCIDENCIAS/SUPERFILTRO2/controlador_filtro.php',
 				type: 'POST',				
 				data: parametros,
 				 beforeSend: function(objeto){
-				$("#loaderI").html("Cargando...");
+				$("#loader12").html("Cargando...");
 			  },
 				success:function(data){
-					$(".datos_ajaxI").html(data).fadeIn('slow');
-					$("#loaderI").html("");
+					$(".datos_ajax12").html(data).fadeIn('slow');
+					$("#loader12").html("");
 				}
 			})
 		}
