@@ -38,16 +38,16 @@
     }
 function actualizarContadorCOMRegistros() {
     var selector = [
-        "input[id^='STATUS_VENTAS_COM2']:enabled",
-        "input[id^='STATUS_FINANZAS_COM2']:enabled",
-        "input[id^='STATUS_AUDITORIA2_COM2']:enabled",
-        "input[id^='STATUS_AUDITORIA3_COM2']:enabled"
+        "input[id^='STATUS_VENTAS_COM2']",
+        "input[id^='STATUS_FINANZAS_COM2']",
+        "input[id^='STATUS_AUDITORIA2_COM2']",
+        "input[id^='STATUS_AUDITORIA3_COM2']"
     ].join(',');
 
-    var $desbloqueados = $(selector);
-    var totalDesbloqueados = $desbloqueados.length;
-    var totalPrendidos    = $desbloqueados.filter(':checked').length;
-    var totalPendientes   = totalDesbloqueados - totalPrendidos;
+    var $registros = $(selector);
+    var totalRegistros = $registros.length;
+    var totalPrendidos = $registros.filter(':checked').length;
+    var totalPendientes = totalRegistros - totalPrendidos;
 
     $("#COM-registros").html("<span class='circulo-contador'>" + totalPendientes + "</span>");
 }

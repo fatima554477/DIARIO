@@ -203,14 +203,12 @@ if($action == "ajaxCOM"){
 		"offset"                    => $offset
 	);
 
-	$datos    = $database->getData($tables, $campos, $search);
-$countAll = (int)$database->getCounter();
+    $datos    = $database->getData($tables, $campos, $search);
+    $countAll = $database->getCounter();
+    $row      = $countAll;
 
-	$total_registros_global = $countAll;
-	$row      = $countAll;
-
-	$numrows     = ($row > 0) ? $countAll : 0;
-	$total_pages = ceil($numrows / $per_page);
+    $numrows     = ($row > 0) ? $countAll : 0;
+    $total_pages = ceil($numrows / $per_page);
 
 	?>
 
