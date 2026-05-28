@@ -75,6 +75,7 @@
 		var result = data.split('^');			
 		$('#pasarpagado').html("<span 'ACTUALIZADO'</span>").fadeIn().delay(500).fadeOut();
 		recargarPaginaAUTActual();
+		actualizarContadorCOMRegistros2();
 		
 
 		
@@ -97,6 +98,8 @@ function actualizarContadorCOMRegistros2() {
         'STATUS_AUDITORIA1',
 
         'STATUS_FINANZAS',
+		
+        'pasarpagado1a2',
 
         'STATUS_AUDITORIA2'
 
@@ -104,7 +107,7 @@ function actualizarContadorCOMRegistros2() {
 
 
 
-    var $desbloqueados2 = $('input:enabled').filter(function() {
+    var $registrosCOM2 = $('input').filter(function() {
 
         var id = this.id || '';
 
@@ -116,8 +119,8 @@ function actualizarContadorCOMRegistros2() {
 
     });
 
-    var totalDesbloqueados2 = $desbloqueados2.length;
-    var totalPrendidos2 = $desbloqueados2.filter(':checked').length;
+     var totalDesbloqueados2 = $registrosCOM2.length;
+    var totalPrendidos2 = $registrosCOM2.filter(':checked').length;
 
     var totalPendientes2 = totalDesbloqueados2 - totalPrendidos2;
 
