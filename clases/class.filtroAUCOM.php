@@ -221,13 +221,16 @@ if($search['hiddenpagoproveedores']!=""){
 $sWhere2.="  $tables.hiddenpagoproveedores LIKE '%".$search['hiddenpagoproveedores']."%' AND ";}
 if($search['ADJUNTAR_COTIZACION']!=""){
 $sWhere2.="  $tables.ADJUNTAR_COTIZACION LIKE '%".$search['ADJUNTAR_COTIZACION']."%' AND ";}
+
+// DESPUÉS (termina en AND — correcto)
 if($search['EJECUTIVOTARJETA']!=""){
-$ejecutivoTarjeta = strtoupper($search['EJECUTIVOTARJETA']);
-$ejecutivoTarjetaEscapado = $this->mysqli->real_escape_string($ejecutivoTarjeta);
+    $ejecutivoTarjeta = strtoupper($search['EJECUTIVOTARJETA']);
+    $ejecutivoTarjetaEscapado = $this->mysqli->real_escape_string($ejecutivoTarjeta);
+    $busquedaNombre = "SELECT idRelacion FROM 01informacionpersonal WHERE UPPER(CONCAT_WS(' ', NOMBRE_1, NOMBRE_2, APELLIDO_PATERNO, APELLIDO_MATERNO)) LIKE '%".$ejecutivoTarjetaEscapado."%'";
+    $sWhere2.="  (UPPER($tables.EJECUTIVOTARJETA) LIKE '%".$ejecutivoTarjetaEscapado."%' OR $tables.EJECUTIVOTARJETA IN (".$busquedaNombre.")) AND ";}
 
-$busquedaNombre = "SELECT idRelacion FROM 01informacionpersonal WHERE UPPER(CONCAT_WS(' ', NOMBRE_1, NOMBRE_2, APELLIDO_PATERNO, APELLIDO_MATERNO)) LIKE '%".$ejecutivoTarjetaEscapado."%'";
 
-$sWhere2.="  (UPPER($tables.EJECUTIVOTARJETA) LIKE '%".$ejecutivoTarjetaEscapado."%' OR $tables.EJECUTIVOTARJETA IN (".$busquedaNombre.")) OR ";}
+
 if($search['TIPO_CAMBIOP']!=""){
 $sWhere2.="  $tables.TIPO_CAMBIOP LIKE '%".$search['TIPO_CAMBIOP']."%' AND ";}
 if($search['TOTAL_ENPESOS']!=""){
