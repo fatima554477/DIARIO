@@ -341,42 +341,39 @@ function actualizarContadorCOMRegistros() {
 	
 	
 function LIMPIAR2(){
-    var filtros = [
-        "NUMERO_CONSECUTIVO_PROVEE_1","RAZON_SOCIAL_1","RFC_PROVEEDOR_1",
-        "NUMERO_EVENTO_1","EJECUTIVOTARJETA_1","NOMBRE_EVENTO_1",
-        "MOTIVO_GASTO_1","CONCEPTO_PROVEE_1","MONTO_TOTAL_COTIZACION_ADEUDO_1",
-        "MONTO_FACTURA_1","MONTO_PROPINA_1","MONTO_DEPOSITAR_1",
-        "TIPO_DE_MONEDA_1","PFORMADE_PAGO_1","STATUS_DE_PAGO_1",
-        "BANCO_ORIGEN1AA","ACTIVO_FIJO_1","GASTO_FIJO_1","PAGAR_CADA_1",
-        "FECHA_PPAGO_1","FECHA_TPROGRAPAGO_1","NUMERO_EVENTOFIJO_1",
-        "CLASI_GENERAL_1","SUB_GENERAL_1","MONTO_DE_COMISION_1",
-        "POLIZA_NUMERO_1","NOMBRE_DEL_EJECUTIVO_1","NOMBRE_DEL_AYUDO_1",
-        "OBSERVACIONES_1_1_1","FECHA_DE_LLENADO_1","ADJUNTAR_COTIZACION_1_1",
-        "TIPO_CAMBIOP_1","TOTAL_ENPESOS_1","IMPUESTO_HOSPEDAJE_1",  // <-- corregido: faltaba _1
-        "NOMBRE_COMERCIAL_1","IVA_1","TImpuestosRetenidosIVA_5",
-        "TImpuestosRetenidosISR_5","descuentos_5",
-        "UUID","metodoDePago","total","serie","folio","regimenE","UsoCFDI",
-        "TImpuestosTrasladados","TImpuestosRetenidos","Version",
-        "tipoDeComprobante","condicionesDePago","fechaTimbrado",
-        "nombreR","rfcR","Moneda","TipoCambio","ValorUnitarioConcepto",
-        "DescripcionConcepto","ClaveUnidad","ClaveProdServ","Cantidad",
-        "ImporteConcepto","UnidadConcepto","TUA","TuaTotalCargos",
-        "Descuento","propina",
-        "FECHA_A_DEPOSITAR_DESDE","FECHA_A_DEPOSITAR_HASTA",
-        "FECHA_INICIO_EVENTO","FECHA_FINAL_EVENTO",
-        "DEPARTAMENTO2WE","NOMBRE_EVENTO",
-        "FECHA_A_DEPOSITAR_1"  // <-- asegurarse de limpiar este también
-    ];
-    filtros.forEach(function(id){
-        var el = document.getElementById(id);
-        if(el){ el.value = ''; }
+    var $contenedorFiltros = $(".datos_ajaxCOM thead");
+
+    var $camposFiltro = $contenedorFiltros.find("input, select, textarea");
+
+
+
+    $camposFiltro.each(function(){
+
+        if(this.type === "checkbox" || this.type === "radio"){
+
+            this.checked = false;
+
+        } else {
+
+            $(this).val("");
+
+        }
+
     });
+
 
     $("#ADJUNTAR_FACTURA_XML_VACIO2L").prop("checked", false);
 
     // Limpiar el select de plantilla sin disparar el onchange prematuramente
-    var dept = document.getElementById("DEPARTAMENTO2WE");
-    if(dept){ dept.value = ''; }
+    var dept = document.getElementById("DEPARTAMENTO2");
+    if(dept){ dept.value = ""; }
+
+
+
+    lastCOMScrollY = null;
+
+    lastCOMTableScrollTop = null;
+
 
     loadCOM(1);
 }
