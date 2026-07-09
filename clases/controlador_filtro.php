@@ -758,7 +758,19 @@ while ($rowDOCTOS = mysqli_fetch_array($querycontrasDOCTOS)) {
 <?php if($database->plantilla_filtro($nombreTabla,"TIPO_CAMBIOP",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center">$<?php echo number_format($row['TIPO_CAMBIOP'],2,'.',','); $totales='si'; $TIPO_CAMBIOP12 += $row['TIPO_CAMBIOP']; $colspan2 += 1; ?></td><?php } ?>
 <?php if($database->plantilla_filtro($nombreTabla,"TOTAL_ENPESOS",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center">$<?php echo number_format($row['TOTAL_ENPESOS'],2,'.',','); $totales='si'; $TOTAL_ENPESOS12 += $row['TOTAL_ENPESOS']; $colspan2 += 1; ?></td><?php } ?>
 <?php if($database->plantilla_filtro($nombreTabla,"PFORMADE_PAGO",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $row['PFORMADE_PAGO']; $colspan2 += 1; ?></td><?php } ?>
-<?php if($database->plantilla_filtro($nombreTabla,"FECHA_A_DEPOSITAR",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $row['FECHA_A_DEPOSITAR']; $colspan2 += 1; ?></td><?php } ?>
+
+
+<?php if($database->plantilla_filtro($nombreTabla,"FECHA_A_DEPOSITAR",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
+    <td style="text-align:center">
+        <?php 
+            $fecha = $row['FECHA_A_DEPOSITAR'];
+            echo $fecha ? date('d/m/Y', strtotime($fecha)) : '—';
+            $colspan2 += 1; 
+        ?>
+    </td>
+<?php } ?>
+
+
 <?php if($database->plantilla_filtro($nombreTabla,"STATUS_DE_PAGO",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $row['STATUS_DE_PAGO']; $colspan2 += 1; ?></td><?php } ?>
 <?php if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_COTIZACION",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $ADJUNTAR_COTIZACION; $colspan2 += 1; ?></td><?php } ?>
 
