@@ -380,6 +380,7 @@ $filtroNombreAyudo = '07COMPROBACION.NOMBRE_DEL_AYUDO = (
 if ($puedeVerPagosCom) {
 
     $filtroAcceso = '
+  (
 
                     -- 1) Responsable del evento con autorización
                     (04personal.idPersonal = "' . $_SESSION['idem'] . '" 
