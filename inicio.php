@@ -81,7 +81,7 @@ input[type=text] {
 
         <!--start top header-->
           <header class="top-header">
-		  <?php require "inicio/notificaciones.php"; /*php notificaciones*/ ?>
+		  <?php require "inicio/notificaciones3.php"; /*php notificaciones*/ ?>
           </header>
         <!--end top header-->
 
