@@ -287,6 +287,96 @@
 
               </div>
             </nav>
+			<style>
+
+#notificacionesDiarioLista {
+
+    max-height: 520px;
+
+    overflow-y: auto;
+
+}
+
+
+
+#notificacionesDiarioLista .dropdown-item {
+
+    white-space: normal;
+
+}
+
+
+
+#notificacionesDiarioLista .notificacion-diario-item {
+
+    align-items: flex-start !important;
+
+    gap: 12px;
+
+}
+
+
+
+#notificacionesDiarioLista .notificacion-diario-cuerpo {
+
+    min-width: 0;
+
+}
+
+
+
+#notificacionesDiarioLista .notificacion-diario-tipo {
+
+    display: block;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    color: #0d6efd;
+
+    margin-bottom: 6px;
+
+    text-transform: uppercase;
+
+}
+
+
+
+#notificacionesDiarioLista .notificacion-diario-detalle {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+
+    margin-bottom: 0;
+
+    line-height: 1.25;
+
+}
+
+
+
+#notificacionesDiarioLista .notificacion-diario-linea {
+
+    display: block;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+
+.navbar .dropdown-large .dropdown-menu {
+
+    width: min(680px, calc(100vw - 24px));
+
+}
+
+</style>
+
 <script>
 (function(){
     function textoLimpio(valor) {
@@ -298,23 +388,64 @@
         return match ? match[1] : '';
     }
 
-    function textoFila(input) {
+       function celdasFila(input) {
+
         var fila = input.closest ? input.closest('tr') : null;
         if (!fila) {
-            return '';
+            return [];
+
         }
-        return textoLimpio(fila.innerText || fila.textContent || '');
+               return Array.prototype.slice.call(fila.children).map(function(celda){
+
+                   return Array.prototype.slice.call(fila.children).map(function(celda){
+
+            return textoLimpio(celda.innerText || celda.textContent || '');
+
+        }).filter(function(texto){
+
+            return texto !== '';
+
+        });
+
+    }
+
+
+
+    function nombreModulo(modulo) {
+
+        return modulo === 'comprobaciones' ? 'Comprobación' : 'Pago a proveedor';
+
+
+        }).filter(function(texto){
+
+            return texto !== '';
+
+        });
+
+    }
+
+
+
+    function nombreModulo(modulo) {
+
+        return modulo === 'comprobaciones' ? 'Comprobación' : 'Pago a proveedor';
+
     }
 
     function crearNotificacion(input, modulo) {
         var id = extraerId(input);
-        var filaTexto = textoFila(input);
+         var lineas = celdasFila(input);
+
         return {
             id: id,
             modulo: modulo,
+			  tipo: nombreModulo(modulo),
+
             key: modulo + ':' + (id || input.id),
-            titulo: 'Pago pendiente #' + (id || input.id),
-            detalle: filaTexto ? filaTexto.substring(0, 180) : modulo,
+            titulo: nombreModulo(modulo) + ' pendiente #' + (id || input.id),
+
+            detalle: lineas.length ? lineas.slice(0, 8) : [nombreModulo(modulo)],
+
             orden: id ? parseInt(id, 10) : 0
         };
     }
@@ -391,13 +522,22 @@
         }
 
         lista.innerHTML = notificaciones.map(function(notificacion){
+			       var detalle = notificacion.detalle.map(function(linea){
+
+                return '<span class="notificacion-diario-linea">' + escapeHtml(linea) + '</span>';
+
+            }).join('');
+
             return '<a class="dropdown-item" href="javascript:;">'
-                + '<div class="d-flex align-items-center">'
+                + '<div class="d-flex notificacion-diario-item">'
                 + '<div class="notify text-primary"><ion-icon name="cash-outline"></ion-icon></div>'
-                + '<div class="flex-grow-1">'
-                + '<h6 class="msg-name">' + escapeHtml(notificacion.titulo)
-                + '<span class="msg-time float-end">' + escapeHtml(notificacion.modulo) + '</span></h6>'
-                + '<p class="msg-info">' + escapeHtml(notificacion.detalle) + '</p>'
+                          + '<div class="flex-grow-1 notificacion-diario-cuerpo">'
+
+                + '<span class="notificacion-diario-tipo">' + escapeHtml(notificacion.tipo) + '</span>'
+
+                + '<h6 class="msg-name mb-1">' + escapeHtml(notificacion.titulo) + '</h6>'
+
+                + '<p class="msg-info notificacion-diario-detalle">' + detalle + '</p>'
                 + '</div></div></a>';
         }).join('');
     }
