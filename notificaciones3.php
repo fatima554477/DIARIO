@@ -83,7 +83,8 @@
                   </div>
                 </li>-->
                 <li class="nav-item dropdown dropdown-large dropdown-notificaciones-grande">
-                  <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="javascript:;" data-bs-toggle="dropdown">
+                <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="javascript:;" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+
                     <div class="position-relative">
                       <span class="notify-badge" id="notificacionesDiarioBadge">0</span>
                       <ion-icon name="notifications-sharp"></ion-icon>
@@ -202,11 +203,11 @@
 
               </div>
             </nav>
-
 <style>
 .dropdown-notificaciones-grande .notif-panel-grande{
-  width: 420px;
-  max-width: 92vw;
+  width: 560px;
+  max-width: 96vw;
+
   padding: 0;
   border: none;
   border-radius: 14px;
@@ -270,7 +271,7 @@
 .notif-item-grande{
   display:flex;
   gap:12px;
-  padding:14px 12px;
+   padding:16px 14px;
   border-radius:12px;
   margin-bottom:10px;
   text-decoration:none;
@@ -292,8 +293,8 @@
 }
 .notif-item-grande.pagoProveedores .notif-icono-grande{ background:#e7f1ff; color:#0d6efd; }
 .notif-item-grande.comprobaciones .notif-icono-grande{ background:#e6fbf3; color:#20c997; }
-.notif-item-grande h6{ margin:0 0 2px; font-size:13.5px; font-weight:700; color:#212529; }
-.notif-item-grande p{ margin:0; font-size:12.5px; color:#6c757d; line-height:1.35; }
+.notif-item-grande h6{ margin:0 0 2px; font-size:14.5px; font-weight:700; color:#212529; }
+.notif-item-grande p{ margin:0; font-size:13.5px; color:#6c757d; line-height:1.35; }
 .notif-vacio-grande{ padding:40px 20px; text-align:center; color:#adb5bd; }
 .notif-vacio-grande ion-icon{ font-size:40px; margin-bottom:8px; }
 
@@ -357,16 +358,115 @@
         if (!fila) return '';
         return textoLimpio(fila.innerText || fila.textContent || '');
     }
+   function normalizarTexto(valor) {
+
+        return textoLimpio(valor).toUpperCase()
+
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    }
+
+
+
+    function obtenerValorPorEncabezado(fila, alternativas) {
+
+        var tabla = fila && fila.closest ? fila.closest('table') : null;
+
+        if (!tabla) return '';
+
+
+
+        var encabezados = Array.prototype.slice.call(tabla.querySelectorAll('thead th'));
+
+        if (encabezados.length === 0) {
+
+            encabezados = Array.prototype.slice.call(tabla.querySelectorAll('tr:first-child th'));
+
+        }
+
+
+
+        var celdas = Array.prototype.slice.call(fila.children || []);
+
+        var alternativasNormalizadas = alternativas.map(normalizarTexto);
+
+
+
+        for (var a = 0; a < alternativasNormalizadas.length; a++) {
+
+            for (var i = 0; i < encabezados.length; i++) {
+
+                var encabezado = normalizarTexto(encabezados[i].innerText || encabezados[i].textContent || '');
+
+                if (encabezado.indexOf(alternativasNormalizadas[a]) === -1 || !celdas[i]) continue;
+
+                return textoLimpio(celdas[i].innerText || celdas[i].textContent || '');
+
+            }
+
+        }
+
+        return '';
+
+    }
+
+
+
+    function crearDetalleNotificacion(input, modulo) {
+
+        var fila = input.closest ? input.closest('tr') : null;
+
+        if (!fila) return textoFila(input);
+
+
+
+        var campos = [];
+
+        if (modulo === 'pagoProveedores') {
+
+            campos.push({ etiqueta: 'Solicitud', valor: obtenerValorPorEncabezado(fila, ['NUMERO SOLICITUD', 'NUMERO CONSECUTIVO', 'SOLICITUD']) });
+
+        }
+
+        campos.push({ etiqueta: 'Nombre comercial', valor: obtenerValorPorEncabezado(fila, ['NOMBRE COMERCIAL']) });
+
+        campos.push({ etiqueta: 'Evento', valor: obtenerValorPorEncabezado(fila, ['NUMERO EVENTO', 'NUMERO DE EVENTO']) });
+
+        campos.push({ etiqueta: 'Monto', valor: obtenerValorPorEncabezado(fila, ['MONTO DEPOSITAR', 'TOTAL DE LA CONVERSION', 'TOTAL', 'SUBTOTAL']) });
+
+
+
+        var detalle = campos
+
+            .filter(function(campo){ return campo.valor !== ''; })
+
+            .map(function(campo){ return campo.etiqueta + ': ' + campo.valor; })
+
+            .join(' | ');
+
+
+
+        if (detalle) return detalle;
+
+        var filaTexto = textoFila(input);
+
+        return filaTexto ? filaTexto.substring(0, 220) : modulo;
+
+    }
+
+
 
     function crearNotificacion(input, modulo) {
         var id = extraerId(input);
-        var filaTexto = textoFila(input);
+     
         return {
             id: id,
             modulo: modulo,
             key: modulo + ':' + (id || input.id),
-            titulo: 'Pago pendiente #' + (id || input.id),
-            detalle: filaTexto ? filaTexto.substring(0, 180) : modulo,
+             titulo: (modulo === 'comprobaciones' ? 'Comprobación pendiente #' : 'Pago pendiente #') + (id || input.id),
+
+            detalle: crearDetalleNotificacion(input, modulo),
+
             orden: id ? parseInt(id, 10) : 0
         };
     }
@@ -516,6 +616,15 @@
         tab.classList.add('active');
         moduloActivo = tab.getAttribute('data-modulo');
         renderizarNotificacionesDiario();
+    });
+   document.addEventListener('click', function(event){
+
+        if (event.target.closest && event.target.closest('.notif-panel-grande')) {
+
+            event.stopPropagation();
+
+        }
+
     });
 
     if (document.readyState === 'loading') {
