@@ -367,6 +367,47 @@
     }
 
 
+   function obtenerTextoControl(control) {
+
+        if (!control) return '';
+
+        if (control.tagName === 'SELECT') {
+
+            var opcion = control.options && control.selectedIndex >= 0 ? control.options[control.selectedIndex] : null;
+
+            return textoLimpio(opcion ? (opcion.text || opcion.value) : control.value);
+
+        }
+
+        return textoLimpio(control.value);
+
+    }
+
+
+
+    function obtenerTextoCelda(celda) {
+
+        if (!celda) return '';
+
+
+
+        var controlConValor = Array.prototype.slice.call(celda.querySelectorAll('input, select, textarea'))
+
+            .map(obtenerTextoControl)
+
+            .filter(function(valor){ return valor !== ''; })
+
+            .join(' ');
+
+
+
+        if (controlConValor !== '') return controlConValor;
+
+
+
+        return textoLimpio(celda.innerText || celda.textContent || '');
+
+    }
 
     function obtenerValorPorEncabezado(fila, alternativas) {
 
@@ -400,7 +441,8 @@
 
                 if (encabezado.indexOf(alternativasNormalizadas[a]) === -1 || !celdas[i]) continue;
 
-                return textoLimpio(celdas[i].innerText || celdas[i].textContent || '');
+               return obtenerTextoCelda(celdas[i]);
+
 
             }
 
@@ -409,6 +451,39 @@
         return '';
 
     }
+
+    function obtenerValorPorSelector(fila, selectores) {
+
+        if (!fila) return '';
+
+
+
+        for (var i = 0; i < selectores.length; i++) {
+
+            var elemento = fila.querySelector(selectores[i]);
+
+            if (!elemento) continue;
+
+
+
+            var valor = /^(INPUT|SELECT|TEXTAREA)$/.test(elemento.tagName)
+
+                ? obtenerTextoControl(elemento)
+
+                : textoLimpio(elemento.innerText || elemento.textContent || elemento.getAttribute('value') || '');
+
+
+
+            if (valor !== '') return valor;
+
+        }
+
+
+
+        return '';
+
+    }
+
 
 
 
@@ -432,7 +507,29 @@
 
         campos.push({ etiqueta: 'Evento', valor: obtenerValorPorEncabezado(fila, ['NUMERO EVENTO', 'NUMERO DE EVENTO']) });
 
-        campos.push({ etiqueta: 'Monto', valor: obtenerValorPorEncabezado(fila, ['MONTO DEPOSITAR', 'TOTAL DE LA CONVERSION', 'TOTAL', 'SUBTOTAL']) });
+           var monto = obtenerValorPorEncabezado(fila, ['MONTO DEPOSITAR', 'MONTO A DEPOSITAR', 'TOTAL DE LA CONVERSION', 'TOTAL CONVERSION', 'TOTAL', 'SUBTOTAL']);
+
+        if (monto === '') {
+
+            monto = obtenerValorPorSelector(fila, [
+
+                "[id^='montoOriginal_']",
+
+                "[id^='MONTO_DEPOSITAR']",
+
+                "[name^='MONTO_DEPOSITAR']",
+
+                "[id^='MONTO_FACTURA_']",
+
+                "[name^='MONTO_FACTURA']"
+
+            ]);
+
+        }
+		console.log('Fila:', fila, 'Monto obtenido:', monto);
+
+        campos.push({ etiqueta: 'Monto', valor: monto });
+
 
 
 
