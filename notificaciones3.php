@@ -12,7 +12,7 @@
 					 
 <div id="content" >     
 
-<strong><p class="mb-0 text-uppercase" style="font-size:22px;">&nbsp;&nbsp;&nbsp; DIARIO COLABORADOR </p> </strong> </div> 	 
+<strong><p class="mb-0 text-uppercase" style="font-size:22px;">&nbsp;&nbsp;&nbsp; DIARIO DEL COLABORADOR </p> </strong> </div> 	 
 			 
 <div id="content" >     
 
