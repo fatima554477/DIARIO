@@ -91,27 +91,36 @@
 }
 
 function actualizarContadorCOMRegistros2() {
-    var selector2 = [
-        "input[id^='STATUS_VENTAS']",
-        "input[id^='STATUS_FINANZAS']",
-        "input[id^='STATUS_AUDITORIA1']",
-        "input[id^='STATUS_AUDITORIA2']",
-        "input[id^='pasarpagado1a2']"
-    ].join(',');
 
-    var $registros2 = $(selector2).filter(':not(:disabled)');
-    var totalRegistros2 = $registros2.length;
-    var totalPrendidos2 = $registros2.filter(':checked').length;
+    var prefijosValidos = [
+        'STATUS_VENTAS',
+        'STATUS_AUDITORIA1',
+        'STATUS_FINANZAS',
+        'pasarpagado1a2',
+        'STATUS_AUDITORIA2'
+    ];
 
-    var totalPendientes2 = totalRegistros2 - totalPrendidos2;
+    var $registrosCOM2 = $('input').filter(function() {
+        var id = this.id || '';
 
+        return prefijosValidos.some(function(prefijo) {
+            return new RegExp('^' + prefijo + '\\d+$').test(id);
+        });
 
+    });
 
+    // QUITAR LOS BLOQUEADOS (disabled)
+    var $registrosActivos2 = $registrosCOM2.filter(':not(:disabled)');
 
-    $("#contador-registros").html("<span class='circulo-contador'>" + totalPendientes2 + "</span>");
+    var totalDesbloqueados2 = $registrosActivos2.length;
+    var totalPrendidos2 = $registrosActivos2.filter(':checked').length;
 
+    var totalPendientes2 = totalDesbloqueados2 - totalPrendidos2;
+
+    $("#contador-registros").html(
+        "<span class='circulo-contador'>" + totalPendientes2 + "</span>"
+    );
 }
-
 
 function STATUS_CHECKBOX(CHECKBOX_id, permisoModificar) {
     var checkBox = document.getElementById("STATUS_CHECKBOX" + CHECKBOX_id);
@@ -747,7 +756,6 @@ function STATUS_FINANZAS(FINANZAS_id){
 	success:function(data){
 		var result = data.split('^');				
 		$('#pasarpagado').html("Cargando...").fadeIn().delay(500).fadeOut();
-		recargarPaginaAUTActual();
 		actualizarContadorCOMRegistros2();
 		
 		if(result[1]=='si'){
