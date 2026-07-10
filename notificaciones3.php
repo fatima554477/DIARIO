@@ -442,7 +442,7 @@
 
             .map(function(campo){ return campo.etiqueta + ': ' + campo.valor; })
 
-            .join(' | ');
+            .join(' - ');
 
 
 
@@ -463,7 +463,8 @@
             id: id,
             modulo: modulo,
             key: modulo + ':' + (id || input.id),
-             titulo: (modulo === 'comprobaciones' ? 'Comprobación pendiente #' : 'Pago pendiente #') + (id || input.id),
+              titulo: modulo === 'comprobaciones' ? 'Comprobación pendiente' : 'Pago pendiente',
+
 
             detalle: crearDetalleNotificacion(input, modulo),
 
