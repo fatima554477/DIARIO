@@ -12,7 +12,7 @@
 					 
 <div id="content" >     
 
-<strong><p class="mb-0 text-uppercase" style="font-size:22px;">&nbsp;&nbsp;&nbsp; DIARIO COLABORADOR </p> </strong> </div> 	 
+<strong><p class="mb-0 text-uppercase" style="font-size:22px;">&nbsp;&nbsp;&nbsp; INICIO </p> </strong> </div> 	 
 			 
 <div id="content" >     
 
@@ -393,6 +393,12 @@
 <script>
 (function(){
     var moduloActivo = 'todos';
+	   var fuentesRemotasCargadas = false;
+
+    var fuentesRemotasCargando = false;
+
+    var idContenedorRemoto = 'notificacionesDiarioFuentesRemotas';
+
 
     function textoLimpio(valor) {
         return (valor || '').replace(/\s+/g, ' ').trim();
@@ -726,6 +732,121 @@
             orden: id ? parseInt(id, 10) : 0
         };
     }
+	
+	   function asegurarContenedorRemoto() {
+
+        var contenedor = document.getElementById(idContenedorRemoto);
+
+        if (!contenedor) {
+
+            contenedor = document.createElement('div');
+
+            contenedor.id = idContenedorRemoto;
+
+            contenedor.style.display = 'none';
+
+            document.body.appendChild(contenedor);
+
+        }
+
+        return contenedor;
+
+    }
+
+
+
+    function cargarFuenteRemota(config) {
+
+        var parametros = new URLSearchParams();
+
+        Object.keys(config.data).forEach(function(clave){
+
+            parametros.append(clave, config.data[clave]);
+
+        });
+
+
+
+        return fetch(config.url, {
+
+            method: 'POST',
+
+            credentials: 'same-origin',
+
+            headers: {
+
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+
+            },
+
+            body: parametros.toString()
+
+        }).then(function(respuesta){
+
+            if (!respuesta.ok) throw new Error('No se pudo cargar ' + config.url);
+
+            return respuesta.text();
+
+        }).catch(function(){
+
+            return '';
+
+        });
+
+    }
+
+
+
+    function cargarFuentesRemotasNotificaciones() {
+
+        if (fuentesRemotasCargadas || fuentesRemotasCargando || typeof fetch !== 'function') return;
+
+        fuentesRemotasCargando = true;
+
+
+
+        var fuentes = [
+
+            {
+
+                url: 'clases3/controlador_filtro.php',
+
+                data: { actionAUT: 'ajaxAUT', page: '1', per_pageAUT: '500', ADJUNTAR_FACTURA_XML_VACIO: 'si' }
+
+            },
+
+            {
+
+                url: 'clases/controlador_filtro.php',
+
+                data: { actionCOM: 'ajaxCOM', page: '1', per_pageCOM: '500' }
+
+            }
+
+        ];
+
+
+
+        Promise.all(fuentes.map(cargarFuenteRemota)).then(function(respuestas){
+
+            var contenedor = asegurarContenedorRemoto();
+
+            contenedor.innerHTML = respuestas.join('');
+
+            fuentesRemotasCargadas = true;
+
+            fuentesRemotasCargando = false;
+
+            renderizarNotificacionesDiario();
+
+        }).catch(function(){
+
+            fuentesRemotasCargando = false;
+
+        });
+
+    }
+
 
     function obtenerNotificacionesDiario() {
         var notificaciones = { pagoProveedores: [], comprobaciones: [] };
@@ -853,6 +974,12 @@
 
         var notificaciones = obtenerNotificacionesDiario();
         var total = notificaciones.pagoProveedores.length + notificaciones.comprobaciones.length;
+		   if (total === 0 && !fuentesRemotasCargadas) {
+
+            cargarFuentesRemotasNotificaciones();
+
+        }
+
 
         badge.textContent = total;
         titulo.textContent = total > 0 ? 'NOTIFICACIONES (' + total + ')' : 'SIN NOTIFICACIONES';
