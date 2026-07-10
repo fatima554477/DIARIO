@@ -1,4 +1,4 @@
-            <nav class="navbar navbar-expand gap-3">
+          <nav class="navbar navbar-expand gap-3">
               <div class="mobile-menu-button"><ion-icon name="menu-sharp"></ion-icon></div>
              <!-- <form class="searchbar">
                 <div class="position-absolute top-50 translate-middle-y search-icon ms-3"><ion-icon name="search-sharp"></ion-icon></div>
@@ -85,7 +85,7 @@
                 <li class="nav-item dropdown dropdown-large">
                   <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="javascript:;" data-bs-toggle="dropdown">
                     <div class="position-relative">
-                      <span class="notify-badge">0</span>
+                      <span class="notify-badge" id="notificacionesDiarioBadge">0</span>
                       <ion-icon name="notifications-sharp"></ion-icon>
                     </div>
                   </a>
@@ -94,20 +94,16 @@
                  <div class="dropdown-menu dropdown-menu-end">
                     <a href="javascript:;">
                       <div class="msg-header">
-                        <p class="msg-header-title">SIN NOTIFICACIONES</p>
+                        <p class="msg-header-title" id="notificacionesDiarioTitulo">SIN NOTIFICACIONES</p>
                         <!--<p class="msg-header-clear ms-auto">Marks all as read</p>-->
                       </div>
                     </a>
-                    <div class="header-notifications-list">
-                      <a class="dropdown-item" href="javascript:;">
+                    <div class="header-notifications-list" id="notificacionesDiarioLista">
+                      <a class="dropdown-item notificaciones-diario-vacio" href="javascript:;">
                         <div class="d-flex align-items-center">
-                          <!--<div class="notify text-primary"><ion-icon name="cart-outline"></ion-icon>
-                          </div>
                           <div class="flex-grow-1">
-                            <h6 class="msg-name">New Orders <span class="msg-time float-end">2 min
-                          ago</span></h6>
-                            <p class="msg-info">You have recived new orders</p>
-                          </div>-->
+                            <p class="msg-info mb-0">SIN NOTIFICACIONES</p>
+                          </div>
                         </div>
                       </a>
                        <!--<a class="dropdown-item" href="javascript:;">
@@ -291,3 +287,145 @@
 
               </div>
             </nav>
+<script>
+(function(){
+    function textoLimpio(valor) {
+        return (valor || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function extraerId(input) {
+        var match = (input.id || '').match(/(\d+)$/);
+        return match ? match[1] : '';
+    }
+
+    function textoFila(input) {
+        var fila = input.closest ? input.closest('tr') : null;
+        if (!fila) {
+            return '';
+        }
+        return textoLimpio(fila.innerText || fila.textContent || '');
+    }
+
+    function crearNotificacion(input, modulo) {
+        var id = extraerId(input);
+        var filaTexto = textoFila(input);
+        return {
+            id: id,
+            modulo: modulo,
+            key: modulo + ':' + (id || input.id),
+            titulo: 'Pago pendiente #' + (id || input.id),
+            detalle: filaTexto ? filaTexto.substring(0, 180) : modulo,
+            orden: id ? parseInt(id, 10) : 0
+        };
+    }
+
+    function obtenerNotificacionesDiario() {
+        var notificaciones = [];
+        var vistos = {};
+        var selectores = [
+            {
+                modulo: 'pagoProveedores',
+                selector: [
+                    "input[id^='STATUS_VENTAS']",
+                    "input[id^='STATUS_AUDITORIA1']",
+                    "input[id^='STATUS_FINANZAS']",
+                    "input[id^='pasarpagado1a2']",
+                    "input[id^='STATUS_AUDITORIA2']"
+                ].join(','),
+                excluir: /_COM2_/,
+                validarId: /^(STATUS_VENTAS|STATUS_AUDITORIA1|STATUS_FINANZAS|pasarpagado1a2|STATUS_AUDITORIA2)\d+$/
+            },
+            {
+                modulo: 'comprobaciones',
+                selector: [
+                    "input[id^='STATUS_VENTAS_COM2_']",
+                    "input[id^='STATUS_FINANZAS_COM2_']",
+                    "input[id^='STATUS_AUDITORIA2_COM2_']",
+                    "input[id^='STATUS_AUDITORIA3_COM2_']"
+                ].join(','),
+                validarId: /^(STATUS_VENTAS_COM2_|STATUS_FINANZAS_COM2_|STATUS_AUDITORIA2_COM2_|STATUS_AUDITORIA3_COM2_)\d+$/
+            }
+        ];
+
+        selectores.forEach(function(config){
+            document.querySelectorAll(config.selector).forEach(function(input){
+                if (!config.validarId.test(input.id || '')) {
+                    return;
+                }
+                if (config.excluir && config.excluir.test(input.id || '')) {
+                    return;
+                }
+                if (input.disabled || input.checked) {
+                    return;
+                }
+                var notificacion = crearNotificacion(input, config.modulo);
+                if (vistos[notificacion.key]) {
+                    return;
+                }
+                vistos[notificacion.key] = true;
+                notificaciones.push(notificacion);
+            });
+        });
+
+        notificaciones.sort(function(a, b){
+            return b.orden - a.orden;
+        });
+        return notificaciones;
+    }
+
+    function renderizarNotificacionesDiario() {
+        var badge = document.getElementById('notificacionesDiarioBadge');
+        var titulo = document.getElementById('notificacionesDiarioTitulo');
+        var lista = document.getElementById('notificacionesDiarioLista');
+        if (!badge || !titulo || !lista) {
+            return;
+        }
+
+        var notificaciones = obtenerNotificacionesDiario();
+        badge.textContent = notificaciones.length;
+        titulo.textContent = notificaciones.length > 0 ? 'NOTIFICACIONES' : 'SIN NOTIFICACIONES';
+
+        if (notificaciones.length === 0) {
+            lista.innerHTML = '<a class="dropdown-item notificaciones-diario-vacio" href="javascript:;"><div class="d-flex align-items-center"><div class="flex-grow-1"><p class="msg-info mb-0">SIN NOTIFICACIONES</p></div></div></a>';
+            return;
+        }
+
+        lista.innerHTML = notificaciones.map(function(notificacion){
+            return '<a class="dropdown-item" href="javascript:;">'
+                + '<div class="d-flex align-items-center">'
+                + '<div class="notify text-primary"><ion-icon name="cash-outline"></ion-icon></div>'
+                + '<div class="flex-grow-1">'
+                + '<h6 class="msg-name">' + escapeHtml(notificacion.titulo)
+                + '<span class="msg-time float-end">' + escapeHtml(notificacion.modulo) + '</span></h6>'
+                + '<p class="msg-info">' + escapeHtml(notificacion.detalle) + '</p>'
+                + '</div></div></a>';
+        }).join('');
+    }
+
+    function escapeHtml(valor) {
+        return String(valor || '').replace(/[&<>'"]/g, function(caracter){
+            return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[caracter];
+        });
+    }
+
+    window.actualizarNotificacionesDiario = renderizarNotificacionesDiario;
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderizarNotificacionesDiario);
+    } else {
+        renderizarNotificacionesDiario();
+    }
+
+    document.addEventListener('change', function(event){
+        if (event.target && event.target.matches && event.target.matches('input[type="checkbox"]')) {
+            setTimeout(renderizarNotificacionesDiario, 0);
+        }
+    });
+
+    var observador = new MutationObserver(function(){
+        clearTimeout(observador._timer);
+        observador._timer = setTimeout(renderizarNotificacionesDiario, 100);
+    });
+    observador.observe(document.body, {childList: true, subtree: true, attributes: true, attributeFilter: ['disabled', 'checked']});
+})();
+</script>
