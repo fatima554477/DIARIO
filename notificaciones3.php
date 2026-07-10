@@ -82,129 +82,44 @@
                     </div>
                   </div>
                 </li>-->
-                <li class="nav-item dropdown dropdown-large">
+                <li class="nav-item dropdown dropdown-large dropdown-notificaciones-grande">
                   <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="javascript:;" data-bs-toggle="dropdown">
                     <div class="position-relative">
                       <span class="notify-badge" id="notificacionesDiarioBadge">0</span>
                       <ion-icon name="notifications-sharp"></ion-icon>
                     </div>
                   </a>
-				  
-				  
-                 <div class="dropdown-menu dropdown-menu-end">
-                    <a href="javascript:;">
-                      <div class="msg-header">
-                        <p class="msg-header-title" id="notificacionesDiarioTitulo">SIN NOTIFICACIONES</p>
-                        <!--<p class="msg-header-clear ms-auto">Marks all as read</p>-->
-                      </div>
-                    </a>
-                    <div class="header-notifications-list" id="notificacionesDiarioLista">
-                      <a class="dropdown-item notificaciones-diario-vacio" href="javascript:;">
-                        <div class="d-flex align-items-center">
-                          <div class="flex-grow-1">
-                            <p class="msg-info mb-0">SIN NOTIFICACIONES</p>
-                          </div>
-                        </div>
-                      </a>
-                       <!--<a class="dropdown-item" href="javascript:;">
-                        <div class="d-flex align-items-center">
-                          <div class="notify text-danger"><ion-icon name="person-outline"></ion-icon>
-                          </div>
-                          <div class="flex-grow-1">
-                            <h6 class="msg-name">New Customers<span class="msg-time float-end">14 Sec
-                           ago</span></h6>
-                            <p class="msg-info">5 new user registered</p>
-                          </div>
-                        </div>
-                      </a>
-                      <a class="dropdown-item" href="javascript:;">
-                        <div class="d-flex align-items-center">
-                          <div class="notify text-success"><ion-icon name="document-outline"></ion-icon>
-                          </div>
-                          <div class="flex-grow-1">
-                            <h6 class="msg-name">24 PDF File<span class="msg-time float-end">19 min
-                          ago</span></h6>
-                            <p class="msg-info">The pdf files generated</p>
-                          </div>
-                        </div>
-                      </a>
-                      
-                      <a class="dropdown-item" href="javascript:;">
-                        <div class="d-flex align-items-center">
-                          <div class="notify text-info"><ion-icon name="checkmark-done-outline"></ion-icon>
-                          </div>
-                          <div class="flex-grow-1">
-                            <h6 class="msg-name">New Product Approved <span
-                          class="msg-time float-end">2 hrs ago</span></h6>
-                            <p class="msg-info">Your new product has approved</p>
-                          </div>
-                        </div>
-                      </a>
-                      <a class="dropdown-item" href="javascript:;">
-                        <div class="d-flex align-items-center">
-                          <div class="notify text-warning"><ion-icon name="send-outline"></ion-icon>
-                          </div>
-                          <div class="flex-grow-1">
-                            <h6 class="msg-name">Time Response <span class="msg-time float-end">28 min
-                          ago</span></h6>
-                            <p class="msg-info">5.1 min avarage time response</p>
-                          </div>
-                        </div>
-                      </a>
-                      <a class="dropdown-item" href="javascript:;">
-                        <div class="d-flex align-items-center">
-                          <div class="notify text-danger"><ion-icon name="chatbox-ellipses-outline"></ion-icon>
-                          </div>
-                          <div class="flex-grow-1">
-                            <h6 class="msg-name">New Comments <span class="msg-time float-end">4 hrs
-                          ago</span></h6>
-                            <p class="msg-info">New customer comments recived</p>
-                          </div>
-                        </div>
-                      </a>
-                      <a class="dropdown-item" href="javascript:;">
-                        <div class="d-flex align-items-center">
-                          <div class="notify text-primary"><ion-icon name="albums-outline"></ion-icon>
-                          </div>
-                          <div class="flex-grow-1">
-                            <h6 class="msg-name">New 24 authors<span class="msg-time float-end">1 day
-                          ago</span></h6>
-                            <p class="msg-info">24 new authors joined last week</p>
-                          </div>
-                        </div>
-                      </a>
-                      <a class="dropdown-item" href="javascript:;">
-                        <div class="d-flex align-items-center">
-                          <div class="notify text-success"><ion-icon name="shield-outline"></ion-icon>
-                          </div>
-                          <div class="flex-grow-1">
-                            <h6 class="msg-name">Your item is shipped <span class="msg-time float-end">5 hrs
-                          ago</span></h6>
-                            <p class="msg-info">Successfully shipped your item</p>
-                          </div>
-                        </div>
-                      </a>
-                      <a class="dropdown-item" href="javascript:;">
-                        <div class="d-flex align-items-center">
-                          <div class="notify text-warning"><ion-icon name="cafe-outline"></ion-icon>
-                          </div>
-                          <div class="flex-grow-1">
-                            <h6 class="msg-name">Defense Alerts <span class="msg-time float-end">2 weeks
-                          ago</span></h6>
-                            <p class="msg-info">45% less alerts last 4 weeks</p>
-                          </div>
-                        </div>
-                      </a>
-                    </div>
-                    <a href="javascript:;">
-                      <div class="text-center msg-footer">View All Notifications</div>
-                    </a>                
-				-->
-                  </div>
 
-				
-				</li>
-				
+                  <div class="dropdown-menu dropdown-menu-end notif-panel-grande">
+                    <div class="notif-panel-header">
+                      <p class="notif-panel-titulo mb-0" id="notificacionesDiarioTitulo">SIN NOTIFICACIONES</p>
+                    </div>
+
+                    <div class="notif-tabs">
+                      <button type="button" class="notif-tab active" data-modulo="todos">
+                        <ion-icon name="apps-outline"></ion-icon>
+                        Todos
+                        <span class="notif-tab-badge" id="tabBadgeTodos">0</span>
+                      </button>
+                      <button type="button" class="notif-tab" data-modulo="pagoProveedores">
+                        <ion-icon name="cash-outline"></ion-icon>
+                        Pago a Proveedor
+                        <span class="notif-tab-badge" id="tabBadgePagoProveedores">0</span>
+                      </button>
+                      <button type="button" class="notif-tab" data-modulo="comprobaciones">
+                        <ion-icon name="document-text-outline"></ion-icon>
+                        Comprobaciones
+                        <span class="notif-tab-badge" id="tabBadgeComprobaciones">0</span>
+                      </button>
+                    </div>
+
+                    <div class="notif-lista-grande" id="notificacionesDiarioLista">
+                      <!-- generado dinámicamente -->
+                    </div>
+                  </div>
+                </li>
+
+              
 <li class="nav-item">
     <div class="mode-icon">
         <h6 class="mb-0 dropdown-user-name"><?php echo $_SESSION["NOMBREUSUARIO"]; ?></h6>
@@ -287,98 +202,147 @@
 
               </div>
             </nav>
-			<style>
 
-#notificacionesDiarioLista {
-
-    max-height: 520px;
-
-    overflow-y: auto;
-
+<style>
+.dropdown-notificaciones-grande .notif-panel-grande{
+  width: 420px;
+  max-width: 92vw;
+  padding: 0;
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.18);
+  overflow: hidden;
 }
-
-
-
-#notificacionesDiarioLista .dropdown-item {
-
-    white-space: normal;
-
+.notif-panel-header{
+  padding: 16px 20px;
+  background: linear-gradient(135deg,#0d6efd,#0a58ca);
 }
-
-
-
-#notificacionesDiarioLista .notificacion-diario-item {
-
-    align-items: flex-start !important;
-
-    gap: 12px;
-
+.notif-panel-titulo{
+  color:#fff;
+  font-weight:700;
+  font-size:15px;
+  letter-spacing:.03em;
+  text-transform:uppercase;
 }
-
-
-
-#notificacionesDiarioLista .notificacion-diario-cuerpo {
-
-    min-width: 0;
-
+.notif-tabs{
+  display:flex;
+  border-bottom:1px solid #e9ecef;
+  background:#f8f9fa;
 }
-
-
-
-#notificacionesDiarioLista .notificacion-diario-tipo {
-
-    display: block;
-
-    font-size: 12px;
-
-    font-weight: 700;
-
-    color: #0d6efd;
-
-    margin-bottom: 6px;
-
-    text-transform: uppercase;
-
+.notif-tab{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:12px 8px;
+  border:none;
+  background:transparent;
+  font-size:13px;
+  font-weight:600;
+  color:#6c757d;
+  cursor:pointer;
+  border-bottom:3px solid transparent;
+  transition:.15s;
 }
-
-
-
-#notificacionesDiarioLista .notificacion-diario-detalle {
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 4px;
-
-    margin-bottom: 0;
-
-    line-height: 1.25;
-
+.notif-tab ion-icon{ font-size:16px; }
+.notif-tab:hover{ color:#0d6efd; background:#eef4ff; }
+.notif-tab.active{ color:#0d6efd; border-bottom-color:#0d6efd; background:#fff; }
+.notif-tab-badge{
+  min-width:20px;
+  padding:1px 6px;
+  border-radius:10px;
+  background:#e9ecef;
+  color:#495057;
+  font-size:11px;
+  font-weight:700;
 }
-
-
-
-#notificacionesDiarioLista .notificacion-diario-linea {
-
-    display: block;
-
-    overflow-wrap: anywhere;
-
+.notif-tab.active .notif-tab-badge{ background:#0d6efd; color:#fff; }
+.notif-lista-grande{
+  max-height:420px;
+  overflow-y:auto;
+  padding:6px;
 }
+.notif-lista-grande::-webkit-scrollbar{ width:6px; }
+.notif-lista-grande::-webkit-scrollbar-thumb{ background:#dee2e6; border-radius:3px; }
 
-
-
-.navbar .dropdown-large .dropdown-menu {
-
-    width: min(680px, calc(100vw - 24px));
-
+/* Tarjetas de notificación con mejor separación visual */
+.notif-item-grande{
+  display:flex;
+  gap:12px;
+  padding:14px 12px;
+  border-radius:12px;
+  margin-bottom:10px;
+  text-decoration:none;
+  transition:.15s;
+  border-left:3px solid transparent;
+  background:#fff;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);
 }
+.notif-item-grande:last-child{ margin-bottom:0; }
+.notif-item-grande:hover{ background:#f1f5ff; box-shadow:0 2px 8px rgba(0,0,0,.10); }
+.notif-item-grande.pagoProveedores{ border-left-color:#0d6efd; }
+.notif-item-grande.comprobaciones{ border-left-color:#20c997; }
 
+.notif-icono-grande{
+  width:38px; height:38px; min-width:38px;
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px;
+}
+.notif-item-grande.pagoProveedores .notif-icono-grande{ background:#e7f1ff; color:#0d6efd; }
+.notif-item-grande.comprobaciones .notif-icono-grande{ background:#e6fbf3; color:#20c997; }
+.notif-item-grande h6{ margin:0 0 2px; font-size:13.5px; font-weight:700; color:#212529; }
+.notif-item-grande p{ margin:0; font-size:12.5px; color:#6c757d; line-height:1.35; }
+.notif-vacio-grande{ padding:40px 20px; text-align:center; color:#adb5bd; }
+.notif-vacio-grande ion-icon{ font-size:40px; margin-bottom:8px; }
+
+/* Chip con el nombre del módulo dentro de cada tarjeta */
+.notif-modulo-chip{
+  display:inline-block;
+  font-size:10.5px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.03em;
+  padding:2px 8px;
+  border-radius:20px;
+  margin-bottom:4px;
+}
+.notif-modulo-chip.pagoProveedores{ background:#e7f1ff; color:#0d6efd; }
+.notif-modulo-chip.comprobaciones{ background:#e6fbf3; color:#20c997; }
+
+/* Encabezados de sección para la vista agrupada "Todos" */
+.notif-seccion-titulo{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 10px 6px;
+  font-size:12px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  color:#6c757d;
+}
+.notif-seccion-titulo.pagoProveedores{ color:#0d6efd; }
+.notif-seccion-titulo.comprobaciones{ color:#20c997; }
+.notif-seccion-titulo .notif-seccion-count{
+  background:#e9ecef;
+  color:#495057;
+  border-radius:10px;
+  padding:1px 7px;
+  font-size:10.5px;
+}
+.notif-seccion-grande{ margin-bottom:8px; }
+.notif-seccion-grande + .notif-seccion-grande{
+  border-top:1px solid #eef0f2;
+  padding-top:6px;
+}
 </style>
 
 <script>
 (function(){
+    var moduloActivo = 'todos';
+
     function textoLimpio(valor) {
         return (valor || '').replace(/\s+/g, ' ').trim();
     }
@@ -388,70 +352,27 @@
         return match ? match[1] : '';
     }
 
-       function celdasFila(input) {
-
+    function textoFila(input) {
         var fila = input.closest ? input.closest('tr') : null;
-        if (!fila) {
-            return [];
-
-        }
-               return Array.prototype.slice.call(fila.children).map(function(celda){
-
-                   return Array.prototype.slice.call(fila.children).map(function(celda){
-
-            return textoLimpio(celda.innerText || celda.textContent || '');
-
-        }).filter(function(texto){
-
-            return texto !== '';
-
-        });
-
-    }
-
-
-
-    function nombreModulo(modulo) {
-
-        return modulo === 'comprobaciones' ? 'Comprobación' : 'Pago a proveedor';
-
-
-        }).filter(function(texto){
-
-            return texto !== '';
-
-        });
-
-    }
-
-
-
-    function nombreModulo(modulo) {
-
-        return modulo === 'comprobaciones' ? 'Comprobación' : 'Pago a proveedor';
-
+        if (!fila) return '';
+        return textoLimpio(fila.innerText || fila.textContent || '');
     }
 
     function crearNotificacion(input, modulo) {
         var id = extraerId(input);
-         var lineas = celdasFila(input);
-
+        var filaTexto = textoFila(input);
         return {
             id: id,
             modulo: modulo,
-			  tipo: nombreModulo(modulo),
-
             key: modulo + ':' + (id || input.id),
-            titulo: nombreModulo(modulo) + ' pendiente #' + (id || input.id),
-
-            detalle: lineas.length ? lineas.slice(0, 8) : [nombreModulo(modulo)],
-
+            titulo: 'Pago pendiente #' + (id || input.id),
+            detalle: filaTexto ? filaTexto.substring(0, 180) : modulo,
             orden: id ? parseInt(id, 10) : 0
         };
     }
 
     function obtenerNotificacionesDiario() {
-        var notificaciones = [];
+        var notificaciones = { pagoProveedores: [], comprobaciones: [] };
         var vistos = {};
         var selectores = [
             {
@@ -480,66 +401,19 @@
 
         selectores.forEach(function(config){
             document.querySelectorAll(config.selector).forEach(function(input){
-                if (!config.validarId.test(input.id || '')) {
-                    return;
-                }
-                if (config.excluir && config.excluir.test(input.id || '')) {
-                    return;
-                }
-                if (input.disabled || input.checked) {
-                    return;
-                }
+                if (!config.validarId.test(input.id || '')) return;
+                if (config.excluir && config.excluir.test(input.id || '')) return;
+                if (input.disabled || input.checked) return;
                 var notificacion = crearNotificacion(input, config.modulo);
-                if (vistos[notificacion.key]) {
-                    return;
-                }
+                if (vistos[notificacion.key]) return;
                 vistos[notificacion.key] = true;
-                notificaciones.push(notificacion);
+                notificaciones[config.modulo].push(notificacion);
             });
         });
 
-        notificaciones.sort(function(a, b){
-            return b.orden - a.orden;
-        });
+        notificaciones.pagoProveedores.sort(function(a,b){ return b.orden - a.orden; });
+        notificaciones.comprobaciones.sort(function(a,b){ return b.orden - a.orden; });
         return notificaciones;
-    }
-
-    function renderizarNotificacionesDiario() {
-        var badge = document.getElementById('notificacionesDiarioBadge');
-        var titulo = document.getElementById('notificacionesDiarioTitulo');
-        var lista = document.getElementById('notificacionesDiarioLista');
-        if (!badge || !titulo || !lista) {
-            return;
-        }
-
-        var notificaciones = obtenerNotificacionesDiario();
-        badge.textContent = notificaciones.length;
-        titulo.textContent = notificaciones.length > 0 ? 'NOTIFICACIONES' : 'SIN NOTIFICACIONES';
-
-        if (notificaciones.length === 0) {
-            lista.innerHTML = '<a class="dropdown-item notificaciones-diario-vacio" href="javascript:;"><div class="d-flex align-items-center"><div class="flex-grow-1"><p class="msg-info mb-0">SIN NOTIFICACIONES</p></div></div></a>';
-            return;
-        }
-
-        lista.innerHTML = notificaciones.map(function(notificacion){
-			       var detalle = notificacion.detalle.map(function(linea){
-
-                return '<span class="notificacion-diario-linea">' + escapeHtml(linea) + '</span>';
-
-            }).join('');
-
-            return '<a class="dropdown-item" href="javascript:;">'
-                + '<div class="d-flex notificacion-diario-item">'
-                + '<div class="notify text-primary"><ion-icon name="cash-outline"></ion-icon></div>'
-                          + '<div class="flex-grow-1 notificacion-diario-cuerpo">'
-
-                + '<span class="notificacion-diario-tipo">' + escapeHtml(notificacion.tipo) + '</span>'
-
-                + '<h6 class="msg-name mb-1">' + escapeHtml(notificacion.titulo) + '</h6>'
-
-                + '<p class="msg-info notificacion-diario-detalle">' + detalle + '</p>'
-                + '</div></div></a>';
-        }).join('');
     }
 
     function escapeHtml(valor) {
@@ -548,7 +422,101 @@
         });
     }
 
+    var ICONOS = {
+        pagoProveedores: 'cash-outline',
+        comprobaciones: 'document-text-outline'
+    };
+    var MODULO_TEXTO = {
+        pagoProveedores: 'Pago a Proveedor',
+        comprobaciones: 'Comprobaciones'
+    };
+    var VACIO_TEXTO = {
+        pagoProveedores: 'No hay pagos a proveedores pendientes',
+        comprobaciones: 'No hay comprobaciones pendientes'
+    };
+
+    function renderizarTarjeta(n) {
+        return '<a class="notif-item-grande ' + n.modulo + '" href="javascript:;">'
+            + '<div class="notif-icono-grande"><ion-icon name="' + ICONOS[n.modulo] + '"></ion-icon></div>'
+            + '<div class="flex-grow-1">'
+            + '<span class="notif-modulo-chip ' + n.modulo + '">' + MODULO_TEXTO[n.modulo] + '</span>'
+            + '<h6>' + escapeHtml(n.titulo) + '</h6>'
+            + '<p>' + escapeHtml(n.detalle) + '</p>'
+            + '</div></a>';
+    }
+
+    function renderizarLista(notificaciones) {
+        var contenedor = document.getElementById('notificacionesDiarioLista');
+        if (!contenedor) return;
+
+        if (moduloActivo === 'todos') {
+            var total = notificaciones.pagoProveedores.length + notificaciones.comprobaciones.length;
+            if (total === 0) {
+                contenedor.innerHTML = '<div class="notif-vacio-grande">'
+                    + '<ion-icon name="checkmark-done-circle-outline"></ion-icon>'
+                    + '<p class="mb-0">No hay notificaciones pendientes</p>'
+                    + '</div>';
+                return;
+            }
+
+            var html = '';
+            ['pagoProveedores', 'comprobaciones'].forEach(function(modulo){
+                var lista = notificaciones[modulo];
+                if (lista.length === 0) return;
+                html += '<div class="notif-seccion-grande">'
+                    + '<div class="notif-seccion-titulo ' + modulo + '">'
+                    + '<ion-icon name="' + ICONOS[modulo] + '"></ion-icon>'
+                    + MODULO_TEXTO[modulo]
+                    + '<span class="notif-seccion-count">' + lista.length + '</span>'
+                    + '</div>'
+                    + lista.map(renderizarTarjeta).join('')
+                    + '</div>';
+            });
+            contenedor.innerHTML = html;
+            return;
+        }
+
+        var lista = notificaciones[moduloActivo];
+        if (lista.length === 0) {
+            contenedor.innerHTML = '<div class="notif-vacio-grande">'
+                + '<ion-icon name="checkmark-done-circle-outline"></ion-icon>'
+                + '<p class="mb-0">' + VACIO_TEXTO[moduloActivo] + '</p>'
+                + '</div>';
+            return;
+        }
+        contenedor.innerHTML = lista.map(renderizarTarjeta).join('');
+    }
+
+    function renderizarNotificacionesDiario() {
+        var badge = document.getElementById('notificacionesDiarioBadge');
+        var titulo = document.getElementById('notificacionesDiarioTitulo');
+        var badgeTodos = document.getElementById('tabBadgeTodos');
+        var badgeProveedores = document.getElementById('tabBadgePagoProveedores');
+        var badgeComprobaciones = document.getElementById('tabBadgeComprobaciones');
+        if (!badge || !titulo) return;
+
+        var notificaciones = obtenerNotificacionesDiario();
+        var total = notificaciones.pagoProveedores.length + notificaciones.comprobaciones.length;
+
+        badge.textContent = total;
+        titulo.textContent = total > 0 ? 'NOTIFICACIONES (' + total + ')' : 'SIN NOTIFICACIONES';
+        if (badgeTodos) badgeTodos.textContent = total;
+        if (badgeProveedores) badgeProveedores.textContent = notificaciones.pagoProveedores.length;
+        if (badgeComprobaciones) badgeComprobaciones.textContent = notificaciones.comprobaciones.length;
+
+        renderizarLista(notificaciones);
+    }
+
     window.actualizarNotificacionesDiario = renderizarNotificacionesDiario;
+
+    document.addEventListener('click', function(event){
+        var tab = event.target.closest ? event.target.closest('.notif-tab') : null;
+        if (!tab) return;
+        document.querySelectorAll('.notif-tab').forEach(function(t){ t.classList.remove('active'); });
+        tab.classList.add('active');
+        moduloActivo = tab.getAttribute('data-modulo');
+        renderizarNotificacionesDiario();
+    });
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', renderizarNotificacionesDiario);
