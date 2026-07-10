@@ -85,9 +85,11 @@
                 <li class="nav-item dropdown dropdown-large dropdown-notificaciones-grande">
                 <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="javascript:;" data-bs-toggle="dropdown" data-bs-auto-close="outside">
 
-                    <div class="position-relative">
+                     <div class="position-relative notif-campana-wrapper" id="notifCampanaWrapper">
+
                       <span class="notify-badge" id="notificacionesDiarioBadge">0</span>
-                      <ion-icon name="notifications-sharp"></ion-icon>
+                      <ion-icon name="notifications-sharp" class="notif-campana-icono"></ion-icon>
+
                     </div>
                   </a>
 
@@ -204,6 +206,54 @@
               </div>
             </nav>
 <style>
+/* Campana más grande */
+
+.notif-campana-icono{
+
+  font-size: 30px;
+
+  transition: color .15s, transform .15s;
+
+}
+
+
+
+/* Estado con notificaciones pendientes: parpadeo + aura amarilla */
+
+.notif-campana-wrapper.notif-alerta{
+
+  border-radius: 50%;
+
+  animation: notifAuraPulso 1.2s ease-in-out infinite;
+
+}
+
+.notif-campana-wrapper.notif-alerta .notif-campana-icono{
+
+  animation: notifColorPulso 1.2s ease-in-out infinite;
+
+}
+
+
+
+@keyframes notifAuraPulso{
+
+  0%   { box-shadow: 0 0 0 0 rgba(255, 193, 7, .85); }
+
+  70%  { box-shadow: 0 0 0 16px rgba(255, 193, 7, 0); }
+
+  100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+
+}
+
+@keyframes notifColorPulso{
+
+  0%, 100% { color: #ffc107; text-shadow: 0 0 6px rgba(255,193,7,.9); }
+
+  50%      { color: #ff8f00; text-shadow: 0 0 14px rgba(255,193,7,1); }
+
+}
+
 .dropdown-notificaciones-grande .notif-panel-grande{
   width: 560px;
   max-width: 96vw;
@@ -809,6 +859,14 @@
         if (badgeTodos) badgeTodos.textContent = total;
         if (badgeProveedores) badgeProveedores.textContent = notificaciones.pagoProveedores.length;
         if (badgeComprobaciones) badgeComprobaciones.textContent = notificaciones.comprobaciones.length;
+		  var wrapper = document.getElementById('notifCampanaWrapper');
+
+        if (wrapper) {
+
+            wrapper.classList.toggle('notif-alerta', total > 0);
+
+        }
+
 
         renderizarLista(notificaciones);
     }
