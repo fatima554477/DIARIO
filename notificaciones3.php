@@ -129,11 +129,13 @@
 </li>			
 				
                 <li class="nav-item dropdown dropdown-user-setting">
-                  <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="javascript:;" data-bs-toggle="dropdown">
-                    <div class="user-setting">
-                      <img src="<?PHP ECHO 'includes/archivos/'.$_SESSION["F_FOTO_ACTUAL"]; ?>" class="user-img" alt="">
-                    </div>
-                  </a>
+               <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="javascript:;" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+
+    <div class="position-relative notif-campana-wrapper" id="notifCampanaWrapper">
+      <span class="notify-badge" id="notificacionesDiarioBadge">0</span>
+      <ion-icon name="notifications-sharp" class="notif-campana-icono"></ion-icon>
+    </div>
+  </a>
                   <ul class="dropdown-menu dropdown-menu-end">
                     <li>
                        <a class="dropdown-item" href="#">
@@ -204,6 +206,30 @@
               </div>
             </nav>
 <style>
+/* Campana más grande */
+.notif-campana-icono{
+  font-size: 30px;
+  transition: color .15s, transform .15s;
+} 
+
+/* Estado con notificaciones pendientes: parpadeo + aura amarilla */
+.notif-campana-wrapper.notif-alerta{
+  border-radius: 50%;
+  animation: notifAuraPulso 1.2s ease-in-out infinite;
+}
+.notif-campana-wrapper.notif-alerta .notif-campana-icono{
+  animation: notifColorPulso 1.2s ease-in-out infinite;
+}
+
+@keyframes notifAuraPulso{
+  0%   { box-shadow: 0 0 0 0 rgba(255, 193, 7, .85); }
+  70%  { box-shadow: 0 0 0 16px rgba(255, 193, 7, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+}
+@keyframes notifColorPulso{
+  0%, 100% { color: #ffc107; text-shadow: 0 0 6px rgba(255,193,7,.9); }
+  50%      { color: #ff8f00; text-shadow: 0 0 14px rgba(255,193,7,1); }
+}
 .dropdown-notificaciones-grande .notif-panel-grande{
   width: 560px;
   max-width: 96vw;
@@ -484,6 +510,98 @@
 
     }
 
+    function obtenerValorPorIdNotificacion(fila, input) {
+
+
+
+        var id = extraerId(input);
+
+
+
+        if (!id) return '';
+
+
+
+
+
+
+
+        var posiblesIds = [
+
+
+
+            'MONTO_DEPOSITAR_' + id,
+
+
+
+            'montoOriginal_' + id,
+
+
+
+            'montoOriginal_COM2_' + id
+
+
+
+        ];
+
+
+
+
+
+
+
+        for (var i = 0; i < posiblesIds.length; i++) {
+
+
+
+            var elemento = document.getElementById(posiblesIds[i]);
+
+
+
+            if (!elemento || (fila && elemento.closest('tr') !== fila)) continue;
+
+
+
+
+
+
+
+            var valor = /^(INPUT|SELECT|TEXTAREA)$/.test(elemento.tagName)
+
+
+
+                ? obtenerTextoControl(elemento)
+
+
+
+                : textoLimpio(elemento.innerText || elemento.textContent || elemento.getAttribute('value') || '');
+
+
+
+
+
+
+
+            if (valor !== '') return valor;
+
+
+
+        }
+
+
+
+
+
+
+
+        return '';
+
+
+
+    }
+
+
+
 
 
 
@@ -507,17 +625,22 @@
 
         campos.push({ etiqueta: 'Evento', valor: obtenerValorPorEncabezado(fila, ['NUMERO EVENTO', 'NUMERO DE EVENTO']) });
 
-           var monto = obtenerValorPorEncabezado(fila, ['MONTO DEPOSITAR', 'MONTO A DEPOSITAR', 'TOTAL DE LA CONVERSION', 'TOTAL CONVERSION', 'TOTAL', 'SUBTOTAL']);
+           var monto = obtenerValorPorIdNotificacion(fila, input);
+
 
         if (monto === '') {
 
             monto = obtenerValorPorSelector(fila, [
 
-                "[id^='montoOriginal_']",
 
                 "[id^='MONTO_DEPOSITAR']",
 
                 "[name^='MONTO_DEPOSITAR']",
+				
+                "[id^='montoOriginal_']",
+
+
+
 
                 "[id^='MONTO_FACTURA_']",
 
@@ -526,7 +649,18 @@
             ]);
 
         }
-		console.log('Fila:', fila, 'Monto obtenido:', monto);
+		
+        if (monto === '') {
+
+
+
+            monto = obtenerValorPorEncabezado(fila, ['MONTO_DEPOSITAR', 'MONTO DEPOSITAR', 'MONTO A DEPOSITAR', 'TOTAL A PAGAR', 'TOTAL DE LA CONVERSION', 'TOTAL CONVERSION', 'TOTAL', 'SUBTOTAL']);
+
+
+
+        }
+
+		
 
         campos.push({ etiqueta: 'Monto', valor: monto });
 
@@ -685,25 +819,33 @@
         contenedor.innerHTML = lista.map(renderizarTarjeta).join('');
     }
 
-    function renderizarNotificacionesDiario() {
-        var badge = document.getElementById('notificacionesDiarioBadge');
-        var titulo = document.getElementById('notificacionesDiarioTitulo');
-        var badgeTodos = document.getElementById('tabBadgeTodos');
-        var badgeProveedores = document.getElementById('tabBadgePagoProveedores');
-        var badgeComprobaciones = document.getElementById('tabBadgeComprobaciones');
-        if (!badge || !titulo) return;
+function renderizarNotificacionesDiario() {
+    var badge = document.getElementById('notificacionesDiarioBadge');
+    var titulo = document.getElementById('notificacionesDiarioTitulo');
+    var badgeTodos = document.getElementById('tabBadgeTodos');
+    var badgeProveedores = document.getElementById('tabBadgePagoProveedores');
+    var badgeComprobaciones = document.getElementById('tabBadgeComprobaciones');
+    if (!badge || !titulo) return;
 
-        var notificaciones = obtenerNotificacionesDiario();
-        var total = notificaciones.pagoProveedores.length + notificaciones.comprobaciones.length;
+    var notificaciones = obtenerNotificacionesDiario();
+    var total = notificaciones.pagoProveedores.length + notificaciones.comprobaciones.length;
 
-        badge.textContent = total;
-        titulo.textContent = total > 0 ? 'NOTIFICACIONES (' + total + ')' : 'SIN NOTIFICACIONES';
-        if (badgeTodos) badgeTodos.textContent = total;
-        if (badgeProveedores) badgeProveedores.textContent = notificaciones.pagoProveedores.length;
-        if (badgeComprobaciones) badgeComprobaciones.textContent = notificaciones.comprobaciones.length;
+    badge.textContent = total;
+    titulo.textContent = total > 0 ? 'NOTIFICACIONES (' + total + ')' : 'SIN NOTIFICACIONES';
+    if (badgeTodos) badgeTodos.textContent = total;
+    if (badgeProveedores) badgeProveedores.textContent = notificaciones.pagoProveedores.length;
+    if (badgeComprobaciones) badgeComprobaciones.textContent = notificaciones.comprobaciones.length;
 
-        renderizarLista(notificaciones);
+    // NUEVO: activa el parpadeo con aura amarilla si hay notificaciones
+    var wrapper = document.getElementById('notifCampanaWrapper');
+    if (wrapper) {
+        wrapper.classList.toggle('notif-alerta', total > 0);
     }
+
+    renderizarLista(notificaciones);
+}
+	
+	
 
     window.actualizarNotificacionesDiario = renderizarNotificacionesDiario;
 
